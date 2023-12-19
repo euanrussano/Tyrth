@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.sophia.tyrth.GameLog
 import com.sophia.tyrth.MapCreator
 import com.sophia.tyrth.TyrthGame
 import com.sophia.tyrth.ecs.component.MonsterComponent
@@ -14,10 +15,11 @@ import ktx.ashley.add
 
 class WorldScreen(tyrthGame: TyrthGame) : Screen {
 
-    val worldViewport = ExtendViewport(20f, 20f)
-    val batch = SpriteBatch()
+    private val guiViewport = ExtendViewport(500f, 500f)
+    private val worldViewport = ExtendViewport(20f, 20f)
+    private val batch = SpriteBatch()
 
-    val engine = PooledEngine()
+    private val engine = PooledEngine()
 
     override fun show() {
         engine.addSystem(InputSystem())
@@ -29,10 +31,11 @@ class WorldScreen(tyrthGame: TyrthGame) : Screen {
         engine.addSystem(VisibilitySystem())
         engine.addSystem(DeathSystem())
         engine.addSystem(RenderingSystem(worldViewport, batch))
-
+        engine.addSystem(GUISystem(guiViewport, batch))
         //MapCreator.mapTest(engine)
         MapCreator.mapDungeon(engine)
 
+        GameLog.entries.add("Welcome to Tyrth!")
     }
 
     override fun render(delta: Float) {

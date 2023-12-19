@@ -2,6 +2,7 @@ package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IntervalIteratingSystem
+import com.sophia.tyrth.GameLog
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
 import kotlin.math.absoluteValue
@@ -24,7 +25,7 @@ class MonsterAI : IntervalIteratingSystem(
         val (x, y) = with(PositionComponent.ID[entity]){ x to y}
 
         if (heroX to heroY in fieldOfView.visibleTiles){
-            println("$name shouts insults")
+            GameLog.entries.add("$name shouts insults")
             val dx = heroX - x
             val dy = heroY - y
             if (dx.absoluteValue > dy.absoluteValue){
