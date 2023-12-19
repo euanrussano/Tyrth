@@ -6,6 +6,7 @@ import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.sophia.tyrth.Assets
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
 import ktx.ashley.getSystem
@@ -19,6 +20,7 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : It
 ) {
 
 
+    var debug: Boolean = false
     private val revealedColor: Color = Color(Color.DARK_GRAY).apply { a = 0.5f }
     private lateinit var visibleTiles: MutableSet<Pair<Int, Int>>
     private lateinit var revealedTiles: MutableSet<Pair<Int, Int>>
@@ -45,7 +47,7 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : It
         val renderable = RenderableComponent.ID[entity]
         val monster = MonsterComponent.ID[entity]
 
-        var isVisible = position.x to position.y in visibleTiles
+        var isVisible = position.x to position.y in visibleTiles || debug
         var isRevealed = position.x to position.y in revealedTiles
 
         if (monster != null){
@@ -61,6 +63,18 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : It
         }
 
         batch.draw(renderable.texture, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+
+        if (debug){
+            for ((x, y) in visibleTiles) {
+                batch.draw(Assets.tilesheet[14][19], x.toFloat(), y.toFloat(), 1f, 1f)
+            }
+
+            FieldOfViewComponent.ID[entity]?.let {
+                for ((x, y) in it.visibleTiles) {
+                    batch.draw(Assets.tilesheet[14][25], x.toFloat(), y.toFloat(), 1f, 1f)
+                }
+            }
+        }
 
 
     }

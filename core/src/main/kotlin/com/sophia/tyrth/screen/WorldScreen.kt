@@ -14,7 +14,7 @@ import ktx.ashley.add
 
 class WorldScreen(tyrthGame: TyrthGame) : Screen {
 
-    val worldViewport = ExtendViewport(10f, 20f)
+    val worldViewport = ExtendViewport(20f, 20f)
     val batch = SpriteBatch()
 
     val engine = PooledEngine()
@@ -22,9 +22,12 @@ class WorldScreen(tyrthGame: TyrthGame) : Screen {
     override fun show() {
         engine.addSystem(InputSystem())
         engine.addSystem(MonsterAI())
+
         engine.addSystem(CollisionSystem())
+        engine.addSystem(MeeleCombatSystem())
         engine.addSystem(MovementSystem())
         engine.addSystem(VisibilitySystem())
+        engine.addSystem(DeathSystem())
         engine.addSystem(RenderingSystem(worldViewport, batch))
 
         //MapCreator.mapTest(engine)

@@ -4,10 +4,9 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.math.Rectangle
-import com.sophia.tyrth.ecs.component.CollisionComponent
-import com.sophia.tyrth.ecs.component.PositionComponent
-import com.sophia.tyrth.ecs.component.VelocityComponent
+import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
+import ktx.ashley.plusAssign
 
 class CollisionSystem : IteratingSystem(
     allOf(
@@ -21,6 +20,7 @@ class CollisionSystem : IteratingSystem(
     val bounds2 = Rectangle(0f, 0f, 1f, 1f)
 
     override fun processEntity(entity: Entity?, deltaTime: Float) {
+        entity ?: return
         val position = PositionComponent.ID[entity]
         val velocity = VelocityComponent.ID[entity]
 
@@ -38,6 +38,12 @@ class CollisionSystem : IteratingSystem(
             if (bounds1.overlaps(bounds2)){
                 velocity.dx = 0
                 velocity.dy = 0
+
+                val combatStats1 = CombatStatsComponent.ID[entity]
+                val combatStats2 = CombatStatsComponent.ID[entity2]
+                if (combatStats1 != null && combatStats2 != null){
+                    entity += WantsToMeeleComponent().apply{ target = entity2 }
+                }
                 return
             }
         }

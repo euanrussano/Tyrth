@@ -3,9 +3,11 @@ package com.sophia.tyrth.ecs.system
 import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.sophia.tyrth.ecs.component.FieldOfViewComponent
 import com.sophia.tyrth.ecs.component.HeroComponent
 import com.sophia.tyrth.ecs.component.VelocityComponent
 import ktx.ashley.allOf
+import ktx.ashley.getSystem
 
 class InputSystem : EntitySystem() {
 
@@ -23,6 +25,8 @@ class InputSystem : EntitySystem() {
             velocity.dx = -1
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.D)){
             velocity.dx = 1
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            engine.getSystem<RenderingSystem>().debug = !engine.getSystem<RenderingSystem>().debug
         }
     }
 

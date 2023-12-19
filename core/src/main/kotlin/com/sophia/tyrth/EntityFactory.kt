@@ -32,6 +32,14 @@ object EntityFactory {
                 this.name = name
             }
             with<VelocityComponent> {}
+            with<HealthComponent>{
+                this.maxHP = 16
+                this.hp = 16
+            }
+            with<CombatStatsComponent>{
+                this.power = 4
+                this.defense = 1
+            }
         }
     }
 
@@ -49,6 +57,17 @@ object EntityFactory {
             }
             with<RenderableComponent> {
                 texture = Assets.tilesheet[0][25]
+            }
+            with<HealthComponent>{
+                this.maxHP = 30
+                this.hp = 30
+            }
+            with<CombatStatsComponent>{
+                this.power = 5
+                this.defense = 2
+            }
+            with<NameComponent>{
+                name = "Scott"
             }
 
 
