@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.ashley.systems.IntervalSystem
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.SaveGameService
 import com.sophia.tyrth.ecs.component.*
 import ktx.actors.centerPosition
 import ktx.actors.onClick
@@ -21,7 +23,7 @@ import ktx.ashley.plusAssign
 import ktx.scene2d.*
 import kotlin.math.min
 
-class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem() {
+class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
 
     private var accumulator: Float = 0f
 
@@ -64,6 +66,11 @@ class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem()
                         onClick {
                             stage.addActor(inventoryWindow)
                             inventoryWindow.centerPosition(stage.width, stage.height)
+                        }
+                    }
+                    textButton("Save Game"){
+                        onClick {
+                            engine?.let { SaveGameService.handle(it) }
                         }
                     }
                 }

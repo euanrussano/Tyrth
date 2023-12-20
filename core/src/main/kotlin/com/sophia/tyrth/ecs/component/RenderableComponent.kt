@@ -6,8 +6,8 @@ import ktx.ashley.mapperFor
 
 class RenderableComponent : Component {
 
-
-    lateinit var texture: TextureRegion
+    //name of the sprite to be retrieved by Assets
+    var name = "<No Name>"
 
     companion object {
         val ID = mapperFor<RenderableComponent>()

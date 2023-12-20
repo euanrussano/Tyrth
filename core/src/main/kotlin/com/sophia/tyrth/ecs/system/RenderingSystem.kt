@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
@@ -23,7 +24,7 @@ import ktx.ashley.getSystem
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
 
-class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : IteratingSystem(
+class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : IteratingSystem(
     allOf(
         PositionComponent::class,
         RenderableComponent::class
@@ -77,7 +78,7 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : It
             return
         }
 
-        batch.draw(renderable.texture, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+        batch.draw(Assets.tiles[renderable.name], position.x.toFloat(), position.y.toFloat(), 1f, 1f)
 
         if (TouchedComponent.ID[entity] != null && NameComponent.ID[entity] != null) {
             val name = NameComponent.ID[entity].name
@@ -85,13 +86,15 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : It
         }
 
         if (debug){
-            for ((x, y) in visibleTiles) {
-                batch.draw(Assets.tilesheet[14][19], x.toFloat(), y.toFloat(), 1f, 1f)
-            }
-
-            FieldOfViewComponent.ID[entity]?.let {
-                for ((x, y) in it.visibleTiles) {
-                    batch.draw(Assets.tilesheet[14][25], x.toFloat(), y.toFloat(), 1f, 1f)
+            if (HeroComponent.ID[entity] != null){
+                for ((x, y) in visibleTiles) {
+                    batch.draw(Assets.tiles["target2"], x.toFloat(), y.toFloat(), 1f, 1f)
+                }
+            } else {
+                FieldOfViewComponent.ID[entity]?.let {
+                    for ((x, y) in it.visibleTiles) {
+                        batch.draw(Assets.tiles["target"], x.toFloat(), y.toFloat(), 1f, 1f)
+                    }
                 }
             }
         }

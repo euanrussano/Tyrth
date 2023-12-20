@@ -15,11 +15,10 @@ import com.sophia.tyrth.ecs.component.MonsterComponent
 import com.sophia.tyrth.ecs.system.*
 import ktx.ashley.add
 
-class WorldScreen(tyrthGame: TyrthGame) : Screen {
+class WorldScreen(val game: TyrthGame) : Screen {
 
-    private val guiViewport = ExtendViewport(500f, 500f)
+    private val guiViewport = game.UIViewport
     private val worldViewport = ExtendViewport(20f, 20f)
-    private val batch = SpriteBatch()
 
     private val engine = PooledEngine()
 
@@ -38,8 +37,8 @@ class WorldScreen(tyrthGame: TyrthGame) : Screen {
         engine.addSystem(ItemDroppingSystem())
         engine.addSystem(VisibilitySystem())
         engine.addSystem(DeathSystem())
-        engine.addSystem(RenderingSystem(worldViewport, batch))
-        engine.addSystem(GUISystem(guiViewport, batch))
+        engine.addSystem(RenderingSystem(worldViewport, game.batch))
+        engine.addSystem(GUISystem(game.UIViewport, game.batch))
         //MapCreator.mapTest(engine)
         MapCreator.mapDungeon(engine)
 

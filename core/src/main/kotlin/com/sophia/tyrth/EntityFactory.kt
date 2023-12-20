@@ -16,12 +16,13 @@ object EntityFactory {
                 this.y = y
             }
             with<RenderableComponent>{
-                texture = if (isWall) Assets.tilesheet[13][0] else Assets.floor
+                name = if (isWall) "wall" else "floor"
             }
             if(isWall){
                 with<CollisionComponent>()
                 with<BlockViewComponent>{}
             }
+            with<TileComponent>{}
         }
     }
 
@@ -33,21 +34,21 @@ object EntityFactory {
         }
     }
     fun rat(engine : Engine, x : Int, y : Int){
-        monster(engine, x, y, Assets.tilesheet[8][31], "Rat")
+        monster(engine, x, y, "rat", "Rat")
     }
 
     fun scorpion(engine : Engine, x : Int, y : Int){
-        monster(engine, x, y, Assets.tilesheet[5][24], "Scorpion")
+        monster(engine, x, y, "scorpion", "Scorpion")
     }
 
-    private fun monster(engine: Engine, x: Int, y: Int, texture : TextureRegion, name : String) {
+    private fun monster(engine: Engine, x: Int, y: Int, textureName : String, name : String) {
         engine.entity {
             with<PositionComponent> {
                 this.x = x
                 this.y = y
             }
             with<RenderableComponent> {
-                this.texture = texture
+                this.name = textureName
             }
             with<FieldOfViewComponent>{
                 range = 3
@@ -82,7 +83,7 @@ object EntityFactory {
                 range = 4
             }
             with<RenderableComponent> {
-                texture = Assets.tilesheet[0][25]
+                name = "hero"
             }
             with<HealthComponent>{
                 this.maxHP = 30
@@ -108,7 +109,7 @@ object EntityFactory {
                 this.y = y
             }
             with<RenderableComponent> {
-                texture = Assets.tilesheet[11][42]
+                name = "health_potion"
             }
             with<NameComponent>{
                 name = "Health Potion"
