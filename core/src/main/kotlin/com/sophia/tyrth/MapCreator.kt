@@ -1,13 +1,9 @@
 package com.sophia.tyrth
 
 import com.badlogic.ashley.core.Engine
-import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.sophia.tyrth.ecs.component.*
-import ktx.ashley.entity
-import ktx.ashley.with
 import kotlin.math.max
 import kotlin.math.min
 
@@ -29,7 +25,7 @@ object MapCreator {
         EntityFactory.hero(engine, heroPosition.first, heroPosition.second)
 
         for (i in 0..10){
-            EntityFactory.monster(engine, i, 4)
+            EntityFactory.randomMonster(engine, i, 4)
         }
     }
 
@@ -49,8 +45,8 @@ object MapCreator {
         for (i in 0 .. MAX_ROOMS){
             val w = MathUtils.random(MIN_SIZE, MAX_SIZE)
             val h = MathUtils.random(MIN_SIZE, MAX_SIZE)
-            val x = MathUtils.random(1, width - w - 1)
-            val y = MathUtils.random(1, height - h - 1)
+            val x = MathUtils.random(1, width - w - 1)-1
+            val y = MathUtils.random(1, height - h - 1)-1
             val newRoom = Rectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat())
             val ok = rooms.firstOrNull { rectangle -> rectangle.overlaps(newRoom) } == null
             if (ok){
@@ -83,11 +79,17 @@ object MapCreator {
         val heroX = rooms.first().x.toInt()
         val heroY = rooms.first().y.toInt()
         EntityFactory.hero(engine, heroX, heroY)
+        EntityFactory.healthPotion(engine, heroX, heroY+1)
+        EntityFactory.healthPotion(engine, heroX, heroY+2)
+        EntityFactory.healthPotion(engine, heroX, heroY+3)
+        EntityFactory.healthPotion(engine, heroX, heroY+4)
+        EntityFactory.healthPotion(engine, heroX, heroY+5)
+        EntityFactory.healthPotion(engine, heroX, heroY+6)
+        EntityFactory.healthPotion(engine, heroX, heroY+7)
 
-        val center = Vector2()
+
         for (room in rooms.drop(1)){
-            room.getCenter(center)
-            EntityFactory.monster(engine, center.x.toInt(), center.y.toInt())
+            spawnRoom(engine, room)
         }
 
 
@@ -112,6 +114,57 @@ object MapCreator {
     fun applyVerticalTunnel(isWall: Array<Array<Boolean>>, y1 : Int, y2 : Int, x : Int){
         for (y in min(y1, y2).. max(y1, y2)){
             isWall[x][y] = false
+        }
+    }
+
+    fun spawnRoom(engine : Engine, room: Rectangle) {
+        spawnMonsters(engine, room)
+        spawnItems(engine, room)
+    }
+
+    private fun spawnMonsters(engine: Engine, room: Rectangle) {
+        val MAX_MONSTERS = 4
+
+        val numberMonsters = MathUtils.random(1, MAX_MONSTERS)
+        val monsterSpawnPoints = mutableListOf<Pair<Int, Int>>()
+        for (i in 0 until numberMonsters) {
+            var added = false
+            while (!added) {
+                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
+                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
+                if (x to y !in monsterSpawnPoints) {
+                    monsterSpawnPoints.add(x to y)
+                    added = true
+                }
+            }
+        }
+
+        // actually spawn the monsters
+        for ((x, y) in monsterSpawnPoints) {
+            EntityFactory.randomMonster(engine, x, y)
+        }
+    }
+
+    private fun spawnItems(engine: Engine, room: Rectangle) {
+        val MAX_ITEMS = 2
+
+        val numberItems = MathUtils.random(1, MAX_ITEMS)
+        val itemSpawnPoints = mutableListOf<Pair<Int, Int>>()
+        for (i in 0 until numberItems) {
+            var added = false
+            while (!added) {
+                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
+                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
+                if (x to y !in itemSpawnPoints) {
+                    itemSpawnPoints.add(x to y)
+                    added = true
+                }
+            }
+        }
+
+        // actually spawn the items
+        for ((x, y) in itemSpawnPoints) {
+            EntityFactory.healthPotion(engine, x, y)
         }
     }
 

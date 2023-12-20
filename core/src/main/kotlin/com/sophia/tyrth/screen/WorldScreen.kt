@@ -1,6 +1,8 @@
 package com.sophia.tyrth.screen
 
 import com.badlogic.ashley.core.PooledEngine
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -22,12 +24,18 @@ class WorldScreen(tyrthGame: TyrthGame) : Screen {
     private val engine = PooledEngine()
 
     override fun show() {
-        engine.addSystem(InputSystem())
+        val im = InputMultiplexer()
+        Gdx.input.inputProcessor = im
+
+        engine.addSystem(InputSystem(worldViewport))
         engine.addSystem(MonsterAI())
 
         engine.addSystem(CollisionSystem())
         engine.addSystem(MeeleCombatSystem())
         engine.addSystem(MovementSystem())
+        engine.addSystem(ItemCollectingSystem())
+        engine.addSystem(ItemUsingSystem())
+        engine.addSystem(ItemDroppingSystem())
         engine.addSystem(VisibilitySystem())
         engine.addSystem(DeathSystem())
         engine.addSystem(RenderingSystem(worldViewport, batch))

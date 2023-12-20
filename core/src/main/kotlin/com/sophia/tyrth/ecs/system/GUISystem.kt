@@ -1,23 +1,35 @@
 package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.EntitySystem
+import com.badlogic.ashley.systems.IntervalSystem
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.GameLog
-import com.sophia.tyrth.ecs.component.HealthComponent
-import com.sophia.tyrth.ecs.component.HeroComponent
+import com.sophia.tyrth.ecs.component.*
+import ktx.actors.centerPosition
+import ktx.actors.onClick
 import ktx.actors.txt
 import ktx.ashley.allOf
+import ktx.ashley.plusAssign
 import ktx.scene2d.*
 import kotlin.math.min
 
 class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem() {
 
-    private var messagesTable: Table
+    private var accumulator: Float = 0f
+
+    private var inventoryWindow: Window
+    private val inventoryTable: Table
+
+    private val messagesTable: Table
+
     private val hpStringFormat = "%2d / %2d"
     private val hpLabel: Label
     private val hpBar: ProgressBar
@@ -25,9 +37,37 @@ class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem()
     val stage = Stage(viewport, batch)
 
     init {
+        inventoryWindow = scene2d.window("Inventory"){
+            this.padTop(10f)
+            this.defaults().pad(5f)
+            table {
+                it.grow()
+                this.top()
+                this.defaults().pad(2f)
+                inventoryTable = this
+            }
+            row()
+            textButton("Close"){
+                onClick {
+                    this@window.remove()
+                }
+            }
+            pack()
+        }
+
         stage.actors {
             table {
                 setFillParent(true)
+                table {
+                    it.growX()
+                    textButton("Inventory"){
+                        onClick {
+                            stage.addActor(inventoryWindow)
+                            inventoryWindow.centerPosition(stage.width, stage.height)
+                        }
+                    }
+                }
+                row()
                 table {
                     it.grow()
                 }
@@ -59,11 +99,20 @@ class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem()
                 }
             }
         }
+
+        val im = Gdx.input.inputProcessor as InputMultiplexer
+        im.addProcessor(0, stage)
     }
 
-    override fun update(deltaTime: Float) {
+    override fun update(deltaTime : Float) {
         super.update(deltaTime)
-        updateStage()
+
+        // update the stage "only" 5 times per second (instead of theoretical 60x)
+        accumulator += deltaTime
+        if (accumulator >= 0.2f){
+            updateStage()
+            accumulator = 0f
+        }
 
         viewport.apply()
         stage.act(deltaTime)
@@ -75,6 +124,7 @@ class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem()
     private fun updateStage() {
         val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
         val health = HealthComponent.ID[hero]
+        val backpack = BackpackComponent.ID[hero]
 
         hpLabel.txt = hpStringFormat.format(health.hp, health.maxHP)
         hpBar.value = health.hp.toFloat()/health.maxHP.toFloat()
@@ -84,6 +134,25 @@ class GUISystem(val viewport: Viewport, val batch: SpriteBatch) : EntitySystem()
             messagesTable.add(entry)
             messagesTable.row()
         }
+
+        inventoryTable.clear()
+        for(item in backpack.items){
+            val name = NameComponent.ID[item].name
+            inventoryTable.add(name)
+            inventoryTable.add(scene2d.textButton("Use"){
+                onClick {
+                    hero += WantsToUseItemComponent().apply{ this.item = item}
+                }
+            })
+            inventoryTable.add(scene2d.textButton("Drop"){
+                onClick {
+                    hero += WantsToDropItemComponent().apply{ this.item = item}
+                }
+            })
+            inventoryTable.row()
+        }
+        inventoryWindow.pack()
+
     }
 
 }

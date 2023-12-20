@@ -2,19 +2,45 @@ package com.sophia.tyrth
 
 import com.badlogic.ashley.core.Engine
 import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.entity
 import ktx.ashley.with
 
 object EntityFactory {
 
-    fun monster(engine: Engine, x: Int, y: Int) {
-        var texture = Assets.tilesheet[8][31] // Rat
-        var name = "Rat"
-        if (MathUtils.randomBoolean()){
-            texture = Assets.tilesheet[5][24] // Scorpion
-            name = "Scorpion"
+    fun tile(engine: Engine, x: Int, y: Int, isWall: Boolean) {
+        engine.entity {
+            with<PositionComponent>{
+                this.x = x
+                this.y = y
+            }
+            with<RenderableComponent>{
+                texture = if (isWall) Assets.tilesheet[13][0] else Assets.floor
+            }
+            if(isWall){
+                with<CollisionComponent>()
+                with<BlockViewComponent>{}
+            }
         }
+    }
+
+    fun randomMonster(engine: Engine, x : Int, y : Int){
+        if (MathUtils.randomBoolean()){
+            rat(engine, x, y)
+        } else{
+            scorpion(engine, x, y)
+        }
+    }
+    fun rat(engine : Engine, x : Int, y : Int){
+        monster(engine, x, y, Assets.tilesheet[8][31], "Rat")
+    }
+
+    fun scorpion(engine : Engine, x : Int, y : Int){
+        monster(engine, x, y, Assets.tilesheet[5][24], "Scorpion")
+    }
+
+    private fun monster(engine: Engine, x: Int, y: Int, texture : TextureRegion, name : String) {
         engine.entity {
             with<PositionComponent> {
                 this.x = x
@@ -69,25 +95,31 @@ object EntityFactory {
             with<NameComponent>{
                 name = "Scott"
             }
-
-
-
+            with<BackpackComponent>{
+                maxWeight = 3
+            }
         }
     }
 
-    fun tile(engine: Engine, x: Int, y: Int, isWall: Boolean) {
+    fun healthPotion(engine : Engine, x : Int, y : Int){
         engine.entity {
-            with<PositionComponent>{
+            with<PositionComponent> {
                 this.x = x
                 this.y = y
             }
-            with<RenderableComponent>{
-                texture = if (isWall) Assets.tilesheet[13][0] else Assets.floor
+            with<RenderableComponent> {
+                texture = Assets.tilesheet[11][42]
             }
-            if(isWall){
-                with<CollisionComponent>()
-                with<BlockViewComponent>{}
+            with<NameComponent>{
+                name = "Health Potion"
             }
+            with<ItemComponent>{}
+            with<ProvidesHealingComponent>{
+                healAmount = 2
+            }
+            with<ConsumableComponent>{}
         }
     }
+
+
 }

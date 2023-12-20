@@ -1,24 +1,39 @@
 package com.sophia.tyrth.ecs.system
 
+import com.badlogic.ashley.core.Engine
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.sophia.tyrth.Assets
 import com.sophia.tyrth.ecs.component.*
+import ktx.actors.txt
 import ktx.ashley.allOf
 import ktx.ashley.getSystem
 import ktx.graphics.use
+import ktx.scene2d.Scene2DSkin
 
 class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : IteratingSystem(
     allOf(
         PositionComponent::class,
         RenderableComponent::class
     ).get()
-) {
+){
 
+    val font = BitmapFont().apply {
+        setUseIntegerPositions(false)
+        this.data.setScale(0.5f/data.xHeight)
+    }
 
     var debug: Boolean = false
     private val revealedColor: Color = Color(Color.DARK_GRAY).apply { a = 0.5f }
@@ -63,6 +78,11 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: SpriteBatch) : It
         }
 
         batch.draw(renderable.texture, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+
+        if (TouchedComponent.ID[entity] != null && NameComponent.ID[entity] != null) {
+            val name = NameComponent.ID[entity].name
+            font.draw(batch,name,position.x.toFloat(), position.y.toFloat())
+        }
 
         if (debug){
             for ((x, y) in visibleTiles) {
