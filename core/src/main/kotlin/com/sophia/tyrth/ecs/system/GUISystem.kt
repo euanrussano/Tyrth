@@ -1,11 +1,9 @@
 package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.EntitySystem
-import com.badlogic.ashley.systems.IntervalSystem
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar
@@ -13,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.GameLog
-import com.sophia.tyrth.SaveGameService
+import com.sophia.tyrth.PersistenceService
 import com.sophia.tyrth.ecs.component.*
 import ktx.actors.centerPosition
 import ktx.actors.onClick
@@ -62,15 +60,18 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
                 setFillParent(true)
                 table {
                     it.growX()
-                    textButton("Inventory"){
+                    this.defaults().pad(10f)
+                    textButton(" Inventory"){
+                        this.pad(5f)
                         onClick {
                             stage.addActor(inventoryWindow)
                             inventoryWindow.centerPosition(stage.width, stage.height)
                         }
                     }
                     textButton("Save Game"){
+                        this.pad(5f)
                         onClick {
-                            engine?.let { SaveGameService.handle(it) }
+                            engine?.let { PersistenceService.saveGame(it) }
                         }
                     }
                 }
@@ -143,7 +144,10 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
         }
 
         inventoryTable.clear()
-        for(item in backpack.items){
+        for(item in engine.getEntitiesFor(allOf(InBackpackComponent::class).get())){
+            val backpackID = InBackpackComponent.ID[item].backpackID
+            if (backpackID != backpack.ID) continue
+
             val name = NameComponent.ID[item].name
             inventoryTable.add(name)
             inventoryTable.add(scene2d.textButton("Use"){

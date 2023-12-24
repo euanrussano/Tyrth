@@ -5,21 +5,29 @@ import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.XmlWriter
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
-import java.io.StringWriter
 
-object SaveGameService {
-    fun handle(engine: Engine) {
-        val writer = StringWriter()
-        val xml = XmlWriter(writer)
-        xml.element("Map")
-        saveMap(engine, xml)
-        xml.pop()
-        saveHero(engine, xml)
-        saveMonsters(engine, xml)
 
-        xml.close()
+object PersistenceService {
+    fun saveGame(engine: Engine) {
+//        val file = BufferedWriter(FileWriter("test.xml"))
+//        val xml = XmlWriter(file)
+//        xml.element("Map")
+//        saveMap(engine, xml)
+//        xml.pop()
+//        xml.element("Hero")
+//        saveHero(engine, xml)
+//        xml.pop()
+//        xml.element("Monsters")
+//        saveMonsters(engine, xml)
+//        xml.pop()
+//
+//        xml.close()
+//
+//        file.close()
+    }
 
-        println(writer)
+    fun loadGame(engine: Engine) {
+        //TODO("Not yet implemented")
     }
 
     private fun saveMonsters(engine: Engine, xml: XmlWriter) {
@@ -27,7 +35,18 @@ object SaveGameService {
     }
 
     private fun saveHero(engine: Engine, xml: XmlWriter) {
-        //TODO("Not yet implemented")
+//        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
+//        val position = PositionComponent.ID[hero]
+//        xml.element("Position")
+//        .element("x").text(position.x).pop()
+//        .element("y").text(position.y).pop()
+//        .pop()
+//        collision?.let {  xml.element("Collision").pop() }
+//        blockView?.let {  xml.element("BlockView").pop() }
+//        xml.element("Renderable")
+//            .element("name").text(renderable.name).pop()
+//            .pop()
+//        xml.pop()
     }
 
     private fun saveMap(engine : Engine, xml : XmlWriter) {
@@ -43,7 +62,7 @@ object SaveGameService {
                         .element("y").text(position.y).pop()
                     .pop()
                     collision?.let {  xml.element("Collision").pop() }
-                    blockView?.let { xml.element("BlockView").pop() }
+                    blockView?.let {  xml.element("BlockView").pop() }
                     xml.element("Renderable")
                         .element("name").text(renderable.name).pop()
                     .pop()

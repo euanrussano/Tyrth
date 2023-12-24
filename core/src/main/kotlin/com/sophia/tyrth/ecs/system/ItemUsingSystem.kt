@@ -31,7 +31,7 @@ class ItemUsingSystem : IteratingSystem(
 
         ConsumableComponent.ID[item]?.let {
             val backpack = BackpackComponent.ID[entity]
-            backpack.items.remove(item)
+            backpack.currentWeight -= 1
             engine.removeEntity(item)
         }
 

@@ -41,7 +41,9 @@ class ItemDroppingSystem : IteratingSystem(
                     }
                 }
                 if (!isBlocked){
-                    backpack.items.remove(itemToDrop)
+                    backpack.currentWeight -= 1
+                    itemToDrop.remove<InBackpackComponent>()
+
                     itemToDrop += PositionComponent().apply { this.x = x; this.y = y }
                     entity.remove<WantsToDropItemComponent>()
                     HeroComponent.ID[entity]?.let {

@@ -24,7 +24,7 @@ class ItemCollectingSystem : IteratingSystem(
 
             if (position.x != position2.x || position.y != position2.y) continue
 
-            if (backpack.items.size >= backpack.maxWeight){
+            if (backpack.currentWeight >= backpack.maxWeight){
                 HeroComponent.ID[entity]?.let {
                     val msg = "Your backpack is full! Cannot pick up item"
                     if (GameLog.entries.lastOrNull()?.equals(msg) != true){
@@ -36,7 +36,8 @@ class ItemCollectingSystem : IteratingSystem(
             }
 
             entity2.remove<PositionComponent>()
-            backpack.items.add(entity2)
+            entity2.add(InBackpackComponent().apply { backpackID = backpack.ID })
+            backpack.currentWeight += 1
             HeroComponent.ID[entity]?.let {
                 GameLog.entries.add("You pick up the $name2")
             }
