@@ -81,7 +81,7 @@ object MapCreator {
             val heroX = rooms.first().x.toInt()
             val heroY = rooms.first().y.toInt()
             EntityFactory.hero(engine, heroX, heroY)
-            EntityFactory.scorpion(engine, heroX, heroY+1)
+            EntityFactory.bearTrap(engine, heroX, heroY+1)
             EntityFactory.shield(engine, heroX, heroY+2)
             EntityFactory.healthPotion(engine, heroX, heroY+3)
             EntityFactory.healthPotion(engine, heroX, heroY+4)
@@ -107,8 +107,8 @@ object MapCreator {
 
 
     fun applyRoomToMap(room : Rectangle, isWall : Array<Array<Boolean>>){
-        for (x in (room.x).toInt() .. (room.x + room.width).toInt()){
-            for (y in (room.y).toInt() .. (room.y + room.height).toInt()){
+        for (x in (room.x).toInt() until (room.x + room.width).toInt()){
+            for (y in (room.y).toInt() until (room.y + room.height).toInt()){
                 isWall[x][y] = false
             }
         }
@@ -135,6 +135,9 @@ object MapCreator {
             "Shield" to 3,
             "Longsword" to depth-1,
             "Tower Shield" to depth-1,
+            "Rations" to 10,
+            "Map Scroll" to 1,
+            "Bear Trap" to 2
         )
         val spawnPoints = mutableMapOf<Pair<Int, Int>, String>()
 
@@ -165,6 +168,9 @@ object MapCreator {
                 "Shield" -> EntityFactory.shield(engine, x, y)
                 "Longsword" -> EntityFactory.longsword(engine, x, y)
                 "Tower Shield" -> EntityFactory.towerShield(engine, x, y)
+                "Rations" -> EntityFactory.rations(engine, x, y)
+                "Map Scroll" -> EntityFactory.mapScroll(engine, x, y)
+                "Bear Trap" -> EntityFactory.bearTrap(engine, x, y)
             }
         }
 

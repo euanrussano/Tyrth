@@ -2,7 +2,6 @@ package com.sophia.tyrth
 
 import com.badlogic.ashley.core.Engine
 import com.badlogic.gdx.math.MathUtils
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.entity
 import ktx.ashley.with
@@ -84,7 +83,7 @@ object EntityFactory {
             with<RenderableComponent>()
             with<HealthComponent>{
                 this.maxHP = 30
-                this.hp = 1
+                this.hp = 30
             }
             with<CombatStatsComponent>{
                 this.power = 5
@@ -97,6 +96,7 @@ object EntityFactory {
                 maxWeight = 3
             }
             with<EquipmentHolderComponent>{}
+            with<HungerClockComponent>{}
         }
     }
 
@@ -197,6 +197,60 @@ object EntityFactory {
             }
         }
     }
+
+
+    fun rations(engine: Engine, x : Int, y: Int){
+        engine.entity{
+            with<PositionComponent>{
+                this.x = x
+                this.y = y
+            }
+            with<RenderableComponent>()
+            with<NameComponent>{
+                this.name = "Rations"
+            }
+            with<ItemComponent>()
+            with<ProvidesFoodComponent>()
+            with<ConsumableComponent>()
+        }
+    }
+
+
+    fun mapScroll(engine: Engine, x : Int, y: Int){
+        engine.entity{
+            with<PositionComponent>{
+                this.x = x
+                this.y = y
+            }
+            with<RenderableComponent>()
+            with<NameComponent>{
+                this.name = "Map Scroll"
+            }
+            with<ItemComponent>()
+            with<MapRevealerComponent>()
+            with<ConsumableComponent>()
+        }
+    }
+
+    fun bearTrap(engine: Engine, x : Int, y: Int){
+        engine.entity{
+            with<PositionComponent>{
+                this.x = x
+                this.y = y
+            }
+            with<RenderableComponent>()
+            with<NameComponent>{
+                this.name = "Bear Trap"
+            }
+            with<HiddenComponent>()
+            with<EntryTriggerComponent>()
+            with<InflictDamageComponent>{
+                damage = 6
+            }
+            with<SingleActivationComponent>{}
+        }
+    }
+
 
 
 }

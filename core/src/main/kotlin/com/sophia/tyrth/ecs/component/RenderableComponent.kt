@@ -6,6 +6,10 @@ import ktx.ashley.mapperFor
 
 class RenderableComponent : Component {
 
+    // coordinates on the main atlas
+    var x = 0
+    var y = 0
+
     companion object {
         val ID = mapperFor<RenderableComponent>()
     }

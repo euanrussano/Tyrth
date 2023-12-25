@@ -2,14 +2,15 @@ package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.Game
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.HungerState
 import com.sophia.tyrth.Messages
 import com.sophia.tyrth.ecs.component.*
-import ktx.ashley.allOf
-import ktx.ashley.plusAssign
-import ktx.ashley.remove
+import ktx.ashley.*
 import kotlin.math.min
+import kotlin.with
 
 class ItemUsingSystem : IteratingSystem(
     allOf(
@@ -30,7 +31,52 @@ class ItemUsingSystem : IteratingSystem(
             HeroComponent.ID[entity]?.let {
                 GameLog.add("You consumed the $itemName, healing $realAmountHealed hp.")
             }
+
+            // show a heart particle effect
+            val (x, y) = with(PositionComponent.ID[entity]){ x to y}
+            engine.entity {
+                with<PositionComponent>{
+                    this.x = x
+                    this.y = y
+                }
+                with<NameComponent>{
+                    name = "heart"
+                }
+                with<RenderableComponent>()
+                with<ParticleLifeTimeComponent>{
+                    lifetime_ms = 200
+                }
+            }
         }
+
+        ProvidesFoodComponent.ID[item]?.let {
+            val name = NameComponent.ID[item].name
+            HungerClockComponent.ID[entity]?.let { hunger ->
+                hunger.state = HungerState.WellFed
+                hunger.duration = hunger.state.duration
+                HeroComponent.ID[entity]?.let {
+                    GameLog.add("You eat the $name")
+                }
+            }
+        }
+
+        MapRevealerComponent.ID[item]?.let {
+            FieldOfViewComponent.ID[entity]?.let { fieldOfView ->
+                val maxX = engine.getEntitiesFor(allOf(PositionComponent::class).get()).map { PositionComponent.ID[it].x }.max()
+                val maxY = engine.getEntitiesFor(allOf(PositionComponent::class).get()).map { PositionComponent.ID[it].y }.max()
+                for (i in 0 .. maxX){
+                    for (j in 0 .. maxY){
+                        fieldOfView.revealedTiles.add(i to j)
+
+                    }
+                }
+
+                HeroComponent.ID[entity]?.let {
+                    GameLog.add("The map is revealed to you!")
+                }
+            }
+        }
+
         EquippableComponent.ID[item]?.let { equippableComponent ->
             val slot = equippableComponent.slot
 

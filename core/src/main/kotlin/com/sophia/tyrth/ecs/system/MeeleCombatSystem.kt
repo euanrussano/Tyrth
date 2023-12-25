@@ -5,10 +5,13 @@ import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.math.MathUtils
 import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.HungerState
 import com.sophia.tyrth.Messages
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
+import ktx.ashley.entity
 import ktx.ashley.remove
+import ktx.ashley.with
 import kotlin.math.max
 
 class MeeleCombatSystem : IteratingSystem(
@@ -21,9 +24,16 @@ class MeeleCombatSystem : IteratingSystem(
 
         var offensiveBonus = 0
 
+        // bonus for equipment
         EquipmentHolderComponent.ID[entity]?.let {
             for (item in it.slots.values.filterNotNull()){
                 MeleePowerBonusComponent.ID[item]?.let { offensiveBonus += it.power }
+            }
+        }
+        // bonus for well fed
+        HungerClockComponent.ID[entity]?.let {hunger ->
+            if (hunger.state == HungerState.WellFed){
+                offensiveBonus += 1
             }
         }
 
@@ -59,6 +69,22 @@ class MeeleCombatSystem : IteratingSystem(
         } else {
             GameLog.add("$name hits $name2 for $damage hp.")
             health2.hp -= damage
+
+            // spawn damage particle
+            val (targetX, targetY) = with(PositionComponent.ID[target]){x to y}
+            engine.entity {
+                with<PositionComponent>{
+                    x = targetX
+                    y = targetY
+                }
+                with<NameComponent>{
+                    this.name = "damage"
+                }
+                with<RenderableComponent>()
+                with<ParticleLifeTimeComponent>{
+                    lifetime_ms = 200
+                }
+            }
         }
 
         HeroComponent.ID[entity]?.let {

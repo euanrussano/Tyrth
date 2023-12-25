@@ -36,9 +36,15 @@ object Assets {
             .apply { setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear) })
             .split(16,16)
 
+        tiles["damage"] = tilesheet[11][26]
+        tiles["heart"] = tilesheet[10][39]
 
+        tiles["health potion"] = tilesheet[13][32]
+        tiles["rations"] = tilesheet[13][33]
+        tiles["map scroll"] = tilesheet[15][32]
 
-        tiles["health potion"] = tilesheet[11][42]
+        tiles["bear trap"] = tilesheet[2][23]
+
         tiles["dagger"] = tilesheet[6][34]
         tiles["shield"] = tilesheet[2][38]
         tiles["longsword"] = tilesheet[6][35]

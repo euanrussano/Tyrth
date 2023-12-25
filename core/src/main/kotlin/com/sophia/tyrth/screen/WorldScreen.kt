@@ -12,6 +12,7 @@ import com.sophia.tyrth.GameLog
 import com.sophia.tyrth.MapCreator
 import com.sophia.tyrth.TyrthGame
 import com.sophia.tyrth.ecs.component.MonsterComponent
+import com.sophia.tyrth.ecs.component.NameComponent
 import com.sophia.tyrth.ecs.system.*
 import ktx.ashley.add
 
@@ -36,7 +37,10 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(ItemUsingSystem())
         engine.addSystem(ItemUnequippingSystem())
         engine.addSystem(ItemDroppingSystem())
+        engine.addSystem(TriggerSystem())
+        engine.addSystem(ParticleVanishingSystem())
         engine.addSystem(VisibilitySystem())
+        engine.addSystem(HungerSystem())
         engine.addSystem(DeathSystem())
         engine.addSystem(GameOverSystem())
         engine.addSystem(CameraControlSystem(worldViewport))

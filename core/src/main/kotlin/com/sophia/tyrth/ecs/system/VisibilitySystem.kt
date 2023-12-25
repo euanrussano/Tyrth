@@ -2,11 +2,12 @@ package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.Game
 import com.badlogic.gdx.math.*
-import com.sophia.tyrth.ecs.component.BlockViewComponent
-import com.sophia.tyrth.ecs.component.FieldOfViewComponent
-import com.sophia.tyrth.ecs.component.PositionComponent
+import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
+import ktx.ashley.remove
 
 class VisibilitySystem : IteratingSystem(
     allOf(
@@ -23,6 +24,9 @@ class VisibilitySystem : IteratingSystem(
     override fun processEntity(entity: Entity?, deltaTime: Float) {
         val position = PositionComponent.ID[entity]
         val fieldOfView = FieldOfViewComponent.ID[entity]
+
+        // do not run the algo if the revealed tiles is already and the entity didn't move
+        if (fieldOfView.revealedTiles.isNotEmpty() && EntityMovedComponent.ID[entity] == null) return
 
         fieldOfView.revealedTiles.addAll(fieldOfView.visibleTiles)
         fieldOfView.visibleTiles.clear()
@@ -60,6 +64,24 @@ class VisibilitySystem : IteratingSystem(
         }
         fieldOfView.visibleTiles.removeAll(tilesBlocked)
 
+        // there is a chance of 1/24 of viewing a hidden entity inside the visible range
+        for (hiddenEntity in engine.getEntitiesFor(allOf(NameComponent::class, PositionComponent::class, HiddenComponent::class).get())){
+            val (hiddenX, hiddenY) = with(PositionComponent.ID[hiddenEntity]){x to y}
+            if (hiddenX to hiddenY !in fieldOfView.visibleTiles) continue
 
+            // 1/24 chance of spotting the hidden item
+            val roll = MathUtils.random(1, 24)
+            println(roll)
+            if (roll == 1){
+                val name = NameComponent.ID[hiddenEntity].name
+                hiddenEntity.remove<HiddenComponent>()
+
+                HeroComponent.ID[entity]?.let {
+                    GameLog.add("You spotted a $name")
+                }
+                break
+
+            }
+        }
     }
 }

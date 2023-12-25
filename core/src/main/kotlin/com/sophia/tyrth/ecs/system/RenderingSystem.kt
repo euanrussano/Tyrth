@@ -21,6 +21,7 @@ import com.sophia.tyrth.EquipmentSlot
 import com.sophia.tyrth.ecs.component.*
 import ktx.actors.txt
 import ktx.ashley.allOf
+import ktx.ashley.exclude
 import ktx.ashley.getSystem
 import ktx.ashley.has
 import ktx.graphics.use
@@ -30,7 +31,10 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
     allOf(
         PositionComponent::class,
         RenderableComponent::class
-    ).get()
+    ).exclude(
+        HiddenComponent::class
+    ).
+    get()
 ){
 
     val font = BitmapFont().apply {
@@ -81,17 +85,9 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
             return
         }
 
-        TileComponent.ID[entity]?.let {
-            if (entity.has(CollisionComponent.ID)){
-                batch.draw(Assets.wall, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
-            } else if (entity.has(DownStairsComponent.ID)){
-                batch.draw(Assets.downstairs, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
-            } else {
-                batch.draw(Assets.floor, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
-            }
-        }
-        HeroComponent.ID[entity]?.let {
-            var textureRegion = Assets.hero
+        var textureRegion = Assets.hero
+        if (HeroComponent.ID[entity] != null){
+            textureRegion = Assets.hero
 
             val equipmentHolder = EquipmentHolderComponent.ID[entity]
             equipmentHolder.slots[EquipmentSlot.MELEE]?.let {
@@ -101,16 +97,21 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
                 }
             }
 
-            batch.draw(textureRegion, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
-        }
-        MonsterComponent.ID[entity]?.let {
+
+        } else if (TileComponent.ID[entity] != null ){
+            textureRegion = if (entity.has(CollisionComponent.ID)){
+                Assets.wall
+            } else if (entity.has(DownStairsComponent.ID)){
+                Assets.downstairs
+            } else {
+                Assets.floor
+            }
+        } else {
             val name = NameComponent.ID[entity].name.lowercase()
-            batch.draw(Assets.tiles[name], position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+            textureRegion = Assets.tiles[name]!!
         }
-        ItemComponent.ID[entity]?.let {
-            val name = NameComponent.ID[entity].name.lowercase()
-            batch.draw(Assets.tiles[name], position.x.toFloat(), position.y.toFloat(), 1f, 1f)
-        }
+
+        batch.draw(textureRegion, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
 
 
         if (TouchedComponent.ID[entity] != null && NameComponent.ID[entity] != null) {

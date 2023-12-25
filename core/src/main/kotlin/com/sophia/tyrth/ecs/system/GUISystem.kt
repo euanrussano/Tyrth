@@ -8,6 +8,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -15,10 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.viewport.Viewport
-import com.sophia.tyrth.GameLog
-import com.sophia.tyrth.Messages
-import com.sophia.tyrth.SaveGameService
-import com.sophia.tyrth.TyrthGame
+import com.sophia.tyrth.*
 import com.sophia.tyrth.ecs.component.*
 import com.sophia.tyrth.screen.MainMenuScreen
 import ktx.actors.centerPosition
@@ -33,6 +31,8 @@ class GUISystem(val game : TyrthGame, val viewport: Viewport, val batch: Batch) 
 
 //    private var accumulator: Float = 0f
 
+
+
     private var inventoryWindow: Window
     private val inventoryTable: Table
 
@@ -40,6 +40,9 @@ class GUISystem(val game : TyrthGame, val viewport: Viewport, val batch: Batch) 
     private val equipmentTable: Table
 
     private val messagesTable: Table
+
+    private val hungerBar: ProgressBar
+    private val hungerLabel: Label
 
     private val hpStringFormat = "%2d / %2d"
     private val hpLabel: Label
@@ -139,6 +142,8 @@ class GUISystem(val game : TyrthGame, val viewport: Viewport, val batch: Batch) 
                             it.growX()
                             this.top().left()
                             this.defaults().pad(5f)
+                            label("<No Hunger Info>"){ hungerLabel = this}
+                            progressBar(0f, 1f, 0.1f) { hungerBar = this }
                             label("HP: ")
                             label(" <undefined>"){ hpLabel = this}
                             progressBar(0f, 1f, 0.1f) { hpBar = this }
@@ -270,7 +275,17 @@ class GUISystem(val game : TyrthGame, val viewport: Viewport, val batch: Batch) 
     private fun updateHealth(engine: Engine): Boolean {
         val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
         val health = HealthComponent.ID[hero]
+        val hunger = HungerClockComponent.ID[hero]
 
+        val regex = "(?<=[a-z])(?=[A-Z])".toRegex()
+        hungerLabel.txt = hunger.state.name.replace(regex, " ")
+        hungerLabel.color = when(hunger.state){
+            HungerState.WellFed ->Color.GREEN
+            HungerState.Normal -> Color.WHITE
+            HungerState.Hungry -> Color.YELLOW
+            HungerState.Starving -> Color.RED
+        }
+        hungerBar.value = hunger.duration.toFloat()/hunger.state.duration
         hpLabel.txt = hpStringFormat.format(health.hp, health.maxHP)
         hpBar.value = health.hp.toFloat() / health.maxHP.toFloat()
         return true
