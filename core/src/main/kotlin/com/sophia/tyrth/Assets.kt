@@ -13,6 +13,9 @@ object Assets {
     lateinit var wall : TextureRegion
     lateinit var hero : TextureRegion
 
+    lateinit var target : TextureRegion
+    lateinit var target2 : TextureRegion
+
     private lateinit var tilesheet: Array<Array<TextureRegion>>
     val tiles = mutableMapOf<String, TextureRegion>()
 
@@ -30,14 +33,15 @@ object Assets {
             .split(16,16)
 
 
-        tiles["floor"] = floor
-        tiles["hero"] = tilesheet[0][25]
+
         tiles["health potion"] = tilesheet[11][42]
+        tiles["dagger"] = tilesheet[6][34]
+        tiles["shield"] = tilesheet[2][38]
         tiles["scorpion"] = tilesheet[5][24]
         tiles["rat"] = tilesheet[8][31]
-        tiles["wall"] = tilesheet[13][0]
-        tiles["target"] = tilesheet[14][25]
-        tiles["target2"] = tilesheet[14][19]
+
+        target = tilesheet[14][25]
+        target2 = tilesheet[14][19]
 
         wall = tilesheet[13][0]
         hero = tilesheet[0][25]

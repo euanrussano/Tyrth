@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.Engine
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import kotlin.math.E
 import kotlin.math.max
 import kotlin.math.min
 
@@ -80,8 +81,8 @@ object MapCreator {
             val heroX = rooms.first().x.toInt()
             val heroY = rooms.first().y.toInt()
             EntityFactory.hero(engine, heroX, heroY)
-            EntityFactory.healthPotion(engine, heroX, heroY+1)
-            EntityFactory.healthPotion(engine, heroX, heroY+2)
+            EntityFactory.dagger(engine, heroX, heroY+1)
+            EntityFactory.shield(engine, heroX, heroY+2)
             EntityFactory.healthPotion(engine, heroX, heroY+3)
             EntityFactory.healthPotion(engine, heroX, heroY+4)
             EntityFactory.healthPotion(engine, heroX, heroY+5)
@@ -91,7 +92,7 @@ object MapCreator {
 
 
         for (room in rooms.drop(1)){
-            spawnRoom(engine, room)
+            spawnRoom(engine, room, depth)
         }
 
         // placeDownstairs in last room
@@ -125,55 +126,107 @@ object MapCreator {
         }
     }
 
-    fun spawnRoom(engine : Engine, room: Rectangle) {
-        spawnMonsters(engine, room)
-        spawnItems(engine, room)
-    }
+    fun spawnRoom(engine : Engine, room: Rectangle, depth:Int) {
+        val spawnTable = mutableMapOf(
+            "Rat" to 10,
+            "Scorpion" to 1 + depth,
+            "Health Potion" to 7,
+            "Dagger" to 3,
+            "Shield" to 3,
+        )
+        val spawnPoints = mutableMapOf<Pair<Int, Int>, String>()
 
-    private fun spawnMonsters(engine: Engine, room: Rectangle) {
-        val MAX_MONSTERS = 4
+        val MAX_MONSTERS = 4 + (depth-1)
 
-        val numberMonsters = MathUtils.random(1, MAX_MONSTERS)
-        val monsterSpawnPoints = mutableListOf<Pair<Int, Int>>()
-        for (i in 0 until numberMonsters) {
+        val numberSpawns = MathUtils.random(-2, MAX_MONSTERS)
+
+        for (i in 0 until numberSpawns){
             var added = false
-            while (!added) {
+            var tries = 0
+            while (!added && tries < 20){
                 val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
                 val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
-                if (x to y !in monsterSpawnPoints) {
-                    monsterSpawnPoints.add(x to y)
-                    added = true
-                }
+                if (x to y in spawnPoints){ tries += 1}
+                spawnPoints[x to y] = rollSpawnTable(spawnTable)
+                added = true
             }
         }
 
-        // actually spawn the monsters
-        for ((x, y) in monsterSpawnPoints) {
-            EntityFactory.randomMonster(engine, x, y)
-        }
-    }
 
-    private fun spawnItems(engine: Engine, room: Rectangle) {
-        val MAX_ITEMS = 2
-
-        val numberItems = MathUtils.random(1, MAX_ITEMS)
-        val itemSpawnPoints = mutableListOf<Pair<Int, Int>>()
-        for (i in 0 until numberItems) {
-            var added = false
-            while (!added) {
-                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
-                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
-                if (x to y !in itemSpawnPoints) {
-                    itemSpawnPoints.add(x to y)
-                    added = true
-                }
+        for ((position, name) in spawnPoints){
+            val (x, y) = position
+            when(name){
+                "Rat" -> EntityFactory.rat(engine, x, y)
+                "Scorpion" -> EntityFactory.scorpion(engine, x, y)
+                "Health Potion" -> EntityFactory.healthPotion(engine, x, y)
+                "Dagger" -> EntityFactory.dagger(engine, x, y)
+                "Shield" -> EntityFactory.shield(engine, x, y)
             }
         }
 
-        // actually spawn the items
-        for ((x, y) in itemSpawnPoints) {
-            EntityFactory.healthPotion(engine, x, y)
-        }
+//        spawnMonsters(engine, room)
+//        spawnItems(engine, room)
     }
+
+    private fun rollSpawnTable(spawnTable: MutableMap<String, Int>): String {
+        val totalWeight = spawnTable.values.sum()
+        if (totalWeight ==0 ) return "None"
+
+        var roll = MathUtils.random(1, totalWeight)
+        var index = 0
+        for ((key, value) in spawnTable){
+            if (roll < value){
+                return key
+            }
+            roll -= value
+        }
+        return "None"
+    }
+
+//    private fun spawnMonsters(engine: Engine, room: Rectangle) {
+//        val MAX_MONSTERS = 4
+//
+//        val numberMonsters = MathUtils.random(1, MAX_MONSTERS)
+//        val monsterSpawnPoints = mutableListOf<Pair<Int, Int>>()
+//        for (i in 0 until numberMonsters) {
+//            var added = false
+//            while (!added) {
+//                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
+//                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
+//                if (x to y !in monsterSpawnPoints) {
+//                    monsterSpawnPoints.add(x to y)
+//                    added = true
+//                }
+//            }
+//        }
+//
+//        // actually spawn the monsters
+//        for ((x, y) in monsterSpawnPoints) {
+//            EntityFactory.randomMonster(engine, x, y)
+//        }
+//    }
+//
+//    private fun spawnItems(engine: Engine, room: Rectangle) {
+//        val MAX_ITEMS = 2
+//
+//        val numberItems = MathUtils.random(1, MAX_ITEMS)
+//        val itemSpawnPoints = mutableListOf<Pair<Int, Int>>()
+//        for (i in 0 until numberItems) {
+//            var added = false
+//            while (!added) {
+//                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
+//                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
+//                if (x to y !in itemSpawnPoints) {
+//                    itemSpawnPoints.add(x to y)
+//                    added = true
+//                }
+//            }
+//        }
+//
+//        // actually spawn the items
+//        for ((x, y) in itemSpawnPoints) {
+//            EntityFactory.healthPotion(engine, x, y)
+//        }
+//    }
 
 }

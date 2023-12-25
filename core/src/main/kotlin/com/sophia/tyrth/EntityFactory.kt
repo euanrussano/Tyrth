@@ -117,5 +117,45 @@ object EntityFactory {
         }
     }
 
+    fun dagger(engine: Engine, x : Int, y : Int){
+        engine.entity {
+            with<PositionComponent> {
+                this.x = x
+                this.y = y
+            }
+            with<RenderableComponent>()
+            with<NameComponent>{
+                name = "Dagger"
+            }
+            with<ItemComponent>{}
+            with<EquippableComponent>{
+                slot = EquipmentSlot.MELEE
+            }
+            with<MeleePowerBonusComponent>{
+                power = 2
+            }
+        }
+    }
+
+    fun shield(engine: Engine, x : Int, y : Int){
+        engine.entity {
+            with<PositionComponent> {
+                this.x = x
+                this.y = y
+            }
+            with<RenderableComponent>()
+            with<NameComponent>{
+                name = "Shield"
+            }
+            with<ItemComponent>{}
+            with<EquippableComponent>{
+                slot = EquipmentSlot.SHIELD
+            }
+            with<DefenseBonusComponent>{
+                defense = 1
+            }
+        }
+    }
+
 
 }

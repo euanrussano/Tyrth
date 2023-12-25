@@ -37,6 +37,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(ItemDroppingSystem())
         engine.addSystem(VisibilitySystem())
         engine.addSystem(DeathSystem())
+        engine.addSystem(CameraControlSystem(worldViewport))
         engine.addSystem(RenderingSystem(worldViewport, game.batch))
         engine.addSystem(GUISystem(game.UIViewport, game.batch))
 

@@ -48,6 +48,10 @@ class InputSystem(val viewport: Viewport) : EntitySystem() {
                     break
                 }
             }
+        } else if(Gdx.input.isKeyJustPressed(Input.Keys.P)){
+            hero += WantsToZoomIn()
+        } else if(Gdx.input.isKeyJustPressed(Input.Keys.L)){
+            hero += WantsToZoomOut()
         }
     }
 

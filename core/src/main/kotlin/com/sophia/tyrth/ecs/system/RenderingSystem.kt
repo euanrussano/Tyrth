@@ -110,12 +110,12 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
         if (debug){
             if (HeroComponent.ID[entity] != null){
                 for ((x, y) in visibleTiles) {
-                    batch.draw(Assets.tiles["target2"], x.toFloat(), y.toFloat(), 1f, 1f)
+                    batch.draw(Assets.target2, x.toFloat(), y.toFloat(), 1f, 1f)
                 }
             } else {
                 FieldOfViewComponent.ID[entity]?.let {
                     for ((x, y) in it.visibleTiles) {
-                        batch.draw(Assets.tiles["target"], x.toFloat(), y.toFloat(), 1f, 1f)
+                        batch.draw(Assets.target, x.toFloat(), y.toFloat(), 1f, 1f)
                     }
                 }
             }
