@@ -28,6 +28,9 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
     private var inventoryWindow: Window
     private val inventoryTable: Table
 
+    private var equipmentWindow: Window
+    private val equipmentTable: Table
+
     private val messagesTable: Table
 
     private val hpStringFormat = "%2d / %2d"
@@ -55,6 +58,24 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
             pack()
         }
 
+        equipmentWindow = scene2d.window("Equipment"){
+            this.padTop(10f)
+            this.defaults().pad(5f)
+            table {
+                it.grow()
+                this.top()
+                this.defaults().pad(2f)
+                equipmentTable = this
+            }
+            row()
+            textButton("Close"){
+                onClick {
+                    this@window.remove()
+                }
+            }
+            pack()
+        }
+
         stage.actors {
             table {
                 setFillParent(true)
@@ -66,6 +87,13 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
                         onClick {
                             stage.addActor(inventoryWindow)
                             inventoryWindow.centerPosition(stage.width, stage.height)
+                        }
+                    }
+                    textButton(" Equipment"){
+                        this.pad(5f)
+                        onClick {
+                            stage.addActor(equipmentWindow)
+                            equipmentWindow.centerPosition(stage.width, stage.height)
                         }
                     }
                     textButton("Save Game"){
@@ -163,6 +191,21 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
             inventoryTable.row()
         }
         inventoryWindow.pack()
+
+        equipmentTable.clear()
+        for (item in engine.getEntitiesFor(allOf(EquippedComponent::class).get())){
+            if (EquippedComponent.ID[item].owner != hero) continue
+            val name = NameComponent.ID[item].name
+
+            equipmentTable.add(name)
+            equipmentTable.add(scene2d.textButton("Unequip"){
+                onClick {
+                    hero += WantsToUnequipItemComponent().apply{this.item = item}
+                }
+            })
+            equipmentTable.row()
+        }
+        equipmentWindow.pack()
 
     }
 

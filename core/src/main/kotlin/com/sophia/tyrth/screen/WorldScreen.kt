@@ -34,6 +34,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(MapDepthSystem())
         engine.addSystem(ItemCollectingSystem())
         engine.addSystem(ItemUsingSystem())
+        engine.addSystem(ItemUnequippingSystem())
         engine.addSystem(ItemDroppingSystem())
         engine.addSystem(VisibilitySystem())
         engine.addSystem(DeathSystem())
