@@ -20,7 +20,7 @@ class InputSystem(val viewport: Viewport) : EntitySystem() {
     override fun update(deltaTime: Float) {
         super.update(deltaTime)
 
-        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
+        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).firstOrNull()?: return
         val velocity = VelocityComponent.ID[hero]
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.W)){

@@ -81,7 +81,7 @@ object MapCreator {
             val heroX = rooms.first().x.toInt()
             val heroY = rooms.first().y.toInt()
             EntityFactory.hero(engine, heroX, heroY)
-            EntityFactory.dagger(engine, heroX, heroY+1)
+            EntityFactory.scorpion(engine, heroX, heroY+1)
             EntityFactory.shield(engine, heroX, heroY+2)
             EntityFactory.healthPotion(engine, heroX, heroY+3)
             EntityFactory.healthPotion(engine, heroX, heroY+4)
@@ -133,6 +133,8 @@ object MapCreator {
             "Health Potion" to 7,
             "Dagger" to 3,
             "Shield" to 3,
+            "Longsword" to depth-1,
+            "Tower Shield" to depth-1,
         )
         val spawnPoints = mutableMapOf<Pair<Int, Int>, String>()
 
@@ -161,6 +163,8 @@ object MapCreator {
                 "Health Potion" -> EntityFactory.healthPotion(engine, x, y)
                 "Dagger" -> EntityFactory.dagger(engine, x, y)
                 "Shield" -> EntityFactory.shield(engine, x, y)
+                "Longsword" -> EntityFactory.longsword(engine, x, y)
+                "Tower Shield" -> EntityFactory.towerShield(engine, x, y)
             }
         }
 

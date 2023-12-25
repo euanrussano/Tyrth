@@ -44,7 +44,7 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
     private lateinit var revealedTiles: MutableSet<Pair<Int, Int>>
 
     override fun update(deltaTime: Float) {
-        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
+        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).firstOrNull() ?: return
         val position = PositionComponent.ID[hero]
         val fieldOfView = FieldOfViewComponent.ID[hero]
 

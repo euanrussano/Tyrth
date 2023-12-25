@@ -38,9 +38,10 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(ItemDroppingSystem())
         engine.addSystem(VisibilitySystem())
         engine.addSystem(DeathSystem())
+        engine.addSystem(GameOverSystem())
         engine.addSystem(CameraControlSystem(worldViewport))
         engine.addSystem(RenderingSystem(worldViewport, game.batch))
-        engine.addSystem(GUISystem(game.UIViewport, game.batch))
+        engine.addSystem(GUISystem(game, game.UIViewport, game.batch))
 
 
         GameLog.add("Welcome to Tyrth!")
@@ -65,7 +66,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
     }
 
     override fun hide() {
-        TODO("Not yet implemented")
+        Gdx.input.inputProcessor = null
     }
 
     override fun dispose() {

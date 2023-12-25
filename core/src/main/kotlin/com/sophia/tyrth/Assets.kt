@@ -41,6 +41,10 @@ object Assets {
         tiles["health potion"] = tilesheet[11][42]
         tiles["dagger"] = tilesheet[6][34]
         tiles["shield"] = tilesheet[2][38]
+        tiles["longsword"] = tilesheet[6][35]
+        tiles["tower shield"] = tilesheet[3][38]
+
+
         tiles["scorpion"] = tilesheet[5][24]
         tiles["rat"] = tilesheet[8][31]
 

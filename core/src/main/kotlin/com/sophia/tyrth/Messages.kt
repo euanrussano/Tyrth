@@ -2,6 +2,7 @@ package com.sophia.tyrth
 
 object Messages {
 
+
     var value = 0
     fun nextInt() = value++
 
@@ -9,5 +10,6 @@ object Messages {
     val HERO_EQUIPMENT_CHANGED: Int = nextInt()
     val HERO_INVENTORY_CHANGED: Int = nextInt()
     val LOG_CHANGED: Int = nextInt()
+    val GAME_OVER = nextInt()
 
 }

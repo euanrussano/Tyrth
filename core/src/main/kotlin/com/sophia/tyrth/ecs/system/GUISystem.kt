@@ -18,7 +18,9 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.GameLog
 import com.sophia.tyrth.Messages
 import com.sophia.tyrth.SaveGameService
+import com.sophia.tyrth.TyrthGame
 import com.sophia.tyrth.ecs.component.*
+import com.sophia.tyrth.screen.MainMenuScreen
 import ktx.actors.centerPosition
 import ktx.actors.onClick
 import ktx.actors.txt
@@ -27,7 +29,7 @@ import ktx.ashley.plusAssign
 import ktx.scene2d.*
 import kotlin.math.min
 
-class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
+class GUISystem(val game : TyrthGame, val viewport: Viewport, val batch: Batch) : EntitySystem() {
 
 //    private var accumulator: Float = 0f
 
@@ -43,9 +45,20 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
     private val hpLabel: Label
     private val hpBar: ProgressBar
 
+    private val gameOverTable: Table
+
     val stage = Stage(viewport, batch)
 
     init {
+        gameOverTable = scene2d.table {
+            label("Your journey has ended!")
+            row()
+            label("One day, we'll tell you all about how you did.\n That day, sadly, is not in this chapter...")
+            row()
+            label("Click anywhere to return to the main menu")
+        }
+        gameOverTable.isVisible = false
+
         inventoryWindow = scene2d.window("Inventory"){
             this.padTop(10f)
             this.defaults().pad(5f)
@@ -165,6 +178,18 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
         MessageManager.getInstance().addListener({msg : Telegram ->
             updateEquipment(engine)
         }, Messages.HERO_EQUIPMENT_CHANGED)
+
+        MessageManager.getInstance().addListener({msg : Telegram ->
+            stage.clear()
+            stage.addActor(gameOverTable.apply {
+                setFillParent(true)
+                isVisible = true
+                onClick {
+                    game.screen = MainMenuScreen(game)
+                }
+            })
+            true
+        }, Messages.GAME_OVER)
 
         initializeStage(engine)
     }
