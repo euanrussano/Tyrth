@@ -6,9 +6,11 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.ScreenUtils
+import com.sophia.tyrth.EntityFactory
 import com.sophia.tyrth.LoadGameService
-import com.sophia.tyrth.MapCreator
+//import com.sophia.tyrth.MapCreator
 import com.sophia.tyrth.TyrthGame
+import com.sophia.tyrth.map.MapUtils
 import ktx.actors.onClick
 import ktx.scene2d.actors
 import ktx.scene2d.table
@@ -25,7 +27,13 @@ class MainMenuScreen(val game: TyrthGame) : Screen {
                 this.defaults().pad(10f)
                 textButton("New Game"){
                     onClick {
-                        MapCreator.mapDungeon(game.engine)
+                        val builder = MapUtils.randomBuilder(1)
+                        builder.build()
+                        builder.spawnEntities(game.engine
+                        )
+                        val (x, y) = builder.heroPosition
+                        EntityFactory.hero(game.engine, x, y)
+
                         game.screen = WorldScreen(game)
                     }
                 }

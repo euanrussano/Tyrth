@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.ScreenUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.sophia.tyrth.GameLog
-import com.sophia.tyrth.MapCreator
+//import com.sophia.tyrth.MapCreator
 import com.sophia.tyrth.TyrthGame
 import com.sophia.tyrth.ecs.component.MonsterComponent
 import com.sophia.tyrth.ecs.component.NameComponent

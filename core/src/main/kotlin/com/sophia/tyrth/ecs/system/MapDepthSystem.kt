@@ -4,9 +4,10 @@ import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
 import com.badlogic.gdx.ai.msg.MessageManager
 import com.sophia.tyrth.GameLog
-import com.sophia.tyrth.MapCreator
+//import com.sophia.tyrth.MapCreator
 import com.sophia.tyrth.Messages
 import com.sophia.tyrth.ecs.component.*
+import com.sophia.tyrth.map.MapUtils
 import ktx.ashley.allOf
 import ktx.ashley.oneOf
 import kotlin.math.max
@@ -37,13 +38,19 @@ class MapDepthSystem : IteratingSystem(
         currentDepth += 1
         removeEntitiesOnDepthChange()
 
+        val builder = MapUtils.randomBuilder(currentDepth)
+        builder.build()
+        builder.spawnEntities(engine)
+
         // build the map
-        val rooms = MapCreator.mapDungeon(engine, currentDepth)
+//        val rooms = MapCreator.mapDungeon(engine, currentDepth)
 
         // reposition the hero
         val position = PositionComponent.ID[hero]
-        position.x = rooms.first().x.toInt()
-        position.y = rooms.first().y.toInt()
+//        position.x = rooms.first().x.toInt()
+//        position.y = rooms.first().y.toInt()
+        position.x = builder.heroPosition.first
+        position.y = builder.heroPosition.second
 
         // notify hero and give some health
         GameLog.add("You descend to the next level, and take a moment to heal.")
