@@ -1,9 +1,10 @@
 package com.sophia.tyrth.ecs.component
 
 import com.badlogic.ashley.core.Component
+import com.badlogic.gdx.utils.XmlWriter
 import ktx.ashley.mapperFor
 
-class CombatStatsComponent : Component {
+class CombatStatsComponent : Component{
 
     var power = 1
     var defense = 1
@@ -11,5 +12,6 @@ class CombatStatsComponent : Component {
     companion object{
         val ID = mapperFor<CombatStatsComponent>()
     }
+
 
 }

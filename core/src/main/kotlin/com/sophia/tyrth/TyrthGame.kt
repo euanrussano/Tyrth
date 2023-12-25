@@ -1,5 +1,6 @@
 package com.sophia.tyrth
 
+import com.badlogic.ashley.core.PooledEngine
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -16,6 +17,7 @@ class TyrthGame : Game() {
     lateinit var batch: Batch
     val UIViewport: Viewport = ExtendViewport(500f, 500f)
 
+    val engine = PooledEngine()
     override fun create() {
         batch = SpriteBatch()
 

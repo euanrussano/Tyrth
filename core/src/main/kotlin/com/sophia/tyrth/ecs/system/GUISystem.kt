@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.GameLog
-import com.sophia.tyrth.PersistenceService
+import com.sophia.tyrth.SaveGameService
 import com.sophia.tyrth.ecs.component.*
 import ktx.actors.centerPosition
 import ktx.actors.onClick
@@ -71,7 +71,7 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
                     textButton("Save Game"){
                         this.pad(5f)
                         onClick {
-                            engine?.let { PersistenceService.saveGame(it) }
+                            engine?.let { SaveGameService.saveGame(it) }
                         }
                     }
                 }

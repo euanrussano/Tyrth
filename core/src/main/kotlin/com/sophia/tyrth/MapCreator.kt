@@ -18,7 +18,7 @@ object MapCreator {
         for (i in 0 .. width){
             for (j in 0 .. height){
                 val isWall = (i == 0 || j == 0 || i == width || j == height || MathUtils.randomBoolean(0.1f)) && (i to j != heroPosition)
-                EntityFactory.tile(engine, i, j, isWall)
+                EntityFactory.tile(engine, i, j, isWall, false)
             }
         }
 
@@ -31,7 +31,7 @@ object MapCreator {
 
 
 
-    fun mapDungeon(engine: Engine) {
+    fun mapDungeon(engine: Engine, depth : Int = 1) : List<Rectangle> {
         val width = 80
         val height = 50
 
@@ -72,26 +72,34 @@ object MapCreator {
 
         for (i in isWall.indices){
             for (j in isWall[i].indices){
-                EntityFactory.tile(engine, i, j, isWall[i][j])
+                EntityFactory.tile(engine, i, j, isWall[i][j], false)
             }
         }
 
-        val heroX = rooms.first().x.toInt()
-        val heroY = rooms.first().y.toInt()
-        EntityFactory.hero(engine, heroX, heroY)
-        EntityFactory.healthPotion(engine, heroX, heroY+1)
-        EntityFactory.healthPotion(engine, heroX, heroY+2)
-        EntityFactory.healthPotion(engine, heroX, heroY+3)
-        EntityFactory.healthPotion(engine, heroX, heroY+4)
-        EntityFactory.healthPotion(engine, heroX, heroY+5)
-        EntityFactory.healthPotion(engine, heroX, heroY+6)
-        EntityFactory.healthPotion(engine, heroX, heroY+7)
+        if (depth == 1){
+            val heroX = rooms.first().x.toInt()
+            val heroY = rooms.first().y.toInt()
+            EntityFactory.hero(engine, heroX, heroY)
+            EntityFactory.healthPotion(engine, heroX, heroY+1)
+            EntityFactory.healthPotion(engine, heroX, heroY+2)
+            EntityFactory.healthPotion(engine, heroX, heroY+3)
+            EntityFactory.healthPotion(engine, heroX, heroY+4)
+            EntityFactory.healthPotion(engine, heroX, heroY+5)
+            EntityFactory.healthPotion(engine, heroX, heroY+6)
+            EntityFactory.healthPotion(engine, heroX, heroY+7)
+        }
 
 
         for (room in rooms.drop(1)){
             spawnRoom(engine, room)
         }
 
+        // placeDownstairs in last room
+        val center = Vector2()
+        rooms.first().getCenter(center)
+        EntityFactory.tile(engine, center.x.toInt(), center.y.toInt(), false, true)
+
+        return rooms
 
     }
 

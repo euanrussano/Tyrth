@@ -21,6 +21,7 @@ import com.sophia.tyrth.ecs.component.*
 import ktx.actors.txt
 import ktx.ashley.allOf
 import ktx.ashley.getSystem
+import ktx.ashley.has
 import ktx.graphics.use
 import ktx.scene2d.Scene2DSkin
 
@@ -59,6 +60,7 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
         }
     }
     override fun processEntity(entity: Entity?, deltaTime: Float) {
+        entity ?: return
         val position = PositionComponent.ID[entity]
         val renderable = RenderableComponent.ID[entity]
         val monster = MonsterComponent.ID[entity]
@@ -78,7 +80,27 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
             return
         }
 
-        batch.draw(Assets.tiles[renderable.name], position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+        TileComponent.ID[entity]?.let {
+            if (entity.has(CollisionComponent.ID)){
+                batch.draw(Assets.wall, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+            } else if (entity.has(DownStairsComponent.ID)){
+                batch.draw(Assets.downstairs, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+            } else {
+                batch.draw(Assets.floor, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+            }
+        }
+        HeroComponent.ID[entity]?.let {
+            batch.draw(Assets.hero, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+        }
+        MonsterComponent.ID[entity]?.let {
+            val name = NameComponent.ID[entity].name.lowercase()
+            batch.draw(Assets.tiles[name], position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+        }
+        ItemComponent.ID[entity]?.let {
+            val name = NameComponent.ID[entity].name.lowercase()
+            batch.draw(Assets.tiles[name], position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+        }
+
 
         if (TouchedComponent.ID[entity] != null && NameComponent.ID[entity] != null) {
             val name = NameComponent.ID[entity].name

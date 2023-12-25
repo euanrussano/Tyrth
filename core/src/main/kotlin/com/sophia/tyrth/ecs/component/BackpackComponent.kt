@@ -2,11 +2,12 @@ package com.sophia.tyrth.ecs.component
 
 import com.badlogic.ashley.core.Component
 import com.badlogic.ashley.core.Entity
+import com.badlogic.gdx.utils.XmlWriter
 import ktx.ashley.mapperFor
 
-class BackpackComponent : Component {
+class BackpackComponent : Component{
 
-    val ID = nextInt()
+    var ID = nextInt()
     var maxWeight: Int = 1
     var currentWeight = 0
 

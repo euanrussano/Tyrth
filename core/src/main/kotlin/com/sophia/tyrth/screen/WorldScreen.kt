@@ -19,8 +19,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
 
     private val guiViewport = game.UIViewport
     private val worldViewport = ExtendViewport(20f, 20f)
-
-    private val engine = PooledEngine()
+    private val engine = game.engine
 
     override fun show() {
         val im = InputMultiplexer()
@@ -32,6 +31,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(CollisionSystem())
         engine.addSystem(MeeleCombatSystem())
         engine.addSystem(MovementSystem())
+        engine.addSystem(MapDepthSystem())
         engine.addSystem(ItemCollectingSystem())
         engine.addSystem(ItemUsingSystem())
         engine.addSystem(ItemDroppingSystem())
@@ -39,8 +39,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(DeathSystem())
         engine.addSystem(RenderingSystem(worldViewport, game.batch))
         engine.addSystem(GUISystem(game.UIViewport, game.batch))
-        //MapCreator.mapTest(engine)
-        MapCreator.mapDungeon(engine)
+
 
         GameLog.entries.add("Welcome to Tyrth!")
     }

@@ -8,11 +8,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 object Assets {
 
+    lateinit var downstairs: TextureRegion
+    lateinit var floor : TextureRegion
+    lateinit var wall : TextureRegion
+    lateinit var hero : TextureRegion
+
     private lateinit var tilesheet: Array<Array<TextureRegion>>
     val tiles = mutableMapOf<String, TextureRegion>()
 
     fun load(){
-        val floor : TextureRegion
         Pixmap(64, 64, Pixmap.Format.RGBA8888).apply {
             setColor(Color(Color.WHITE).apply { a = 0.5f })
             fillCircle(32,32, 4)
@@ -28,12 +32,16 @@ object Assets {
 
         tiles["floor"] = floor
         tiles["hero"] = tilesheet[0][25]
-        tiles["health_potion"] = tilesheet[11][42]
+        tiles["health potion"] = tilesheet[11][42]
         tiles["scorpion"] = tilesheet[5][24]
         tiles["rat"] = tilesheet[8][31]
         tiles["wall"] = tilesheet[13][0]
         tiles["target"] = tilesheet[14][25]
         tiles["target2"] = tilesheet[14][19]
+
+        wall = tilesheet[13][0]
+        hero = tilesheet[0][25]
+        downstairs = tilesheet[10][10]
 
     }
 

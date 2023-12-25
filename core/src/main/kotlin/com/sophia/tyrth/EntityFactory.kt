@@ -9,20 +9,21 @@ import ktx.ashley.with
 
 object EntityFactory {
 
-    fun tile(engine: Engine, x: Int, y: Int, isWall: Boolean) {
+    fun tile(engine: Engine, x: Int, y: Int, isWall: Boolean, isDownStairs : Boolean) {
         engine.entity {
             with<PositionComponent>{
                 this.x = x
                 this.y = y
             }
-            with<RenderableComponent>{
-                name = if (isWall) "wall" else "floor"
-            }
+            with<RenderableComponent>()
             if(isWall){
                 with<CollisionComponent>()
                 with<BlockViewComponent>{}
             }
             with<TileComponent>{}
+            if (isDownStairs){
+                with<DownStairsComponent>()
+            }
         }
     }
 
@@ -47,9 +48,7 @@ object EntityFactory {
                 this.x = x
                 this.y = y
             }
-            with<RenderableComponent> {
-                this.name = textureName
-            }
+            with<RenderableComponent>()
             with<FieldOfViewComponent>{
                 range = 3
             }
@@ -82,9 +81,7 @@ object EntityFactory {
             with<FieldOfViewComponent>{
                 range = 4
             }
-            with<RenderableComponent> {
-                name = "hero"
-            }
+            with<RenderableComponent>()
             with<HealthComponent>{
                 this.maxHP = 30
                 this.hp = 30
@@ -108,9 +105,7 @@ object EntityFactory {
                 this.x = x
                 this.y = y
             }
-            with<RenderableComponent> {
-                name = "health_potion"
-            }
+            with<RenderableComponent>()
             with<NameComponent>{
                 name = "Health Potion"
             }
