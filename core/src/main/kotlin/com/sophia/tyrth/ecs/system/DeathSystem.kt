@@ -22,7 +22,7 @@ class DeathSystem : IteratingSystem(
                 println("You are dead")
             } else {
                 val name = NameComponent.ID[entity]?.name ?: "<No Name>"
-                GameLog.entries.add("$name is dead")
+                GameLog.add("$name is dead")
                 engine.removeEntity(entity)
             }
         }

@@ -2,7 +2,9 @@ package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.Messages
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
 import ktx.ashley.oneOf
@@ -41,13 +43,15 @@ class ItemDroppingSystem : IteratingSystem(
                     }
                 }
                 if (!isBlocked){
-                    backpack.currentWeight -= 1
-                    itemToDrop.remove<InBackpackComponent>()
+                    //backpack.currentWeight -= 1
+                    //itemToDrop.remove<InBackpackComponent>()
+                    backpack.items.remove(itemToDrop)
 
                     itemToDrop += PositionComponent().apply { this.x = x; this.y = y }
                     entity.remove<WantsToDropItemComponent>()
                     HeroComponent.ID[entity]?.let {
-                        GameLog.entries.add("You dropped the $name.")
+                        GameLog.add("You dropped the $name.")
+                        MessageManager.getInstance().dispatchMessage(Messages.HERO_INVENTORY_CHANGED)
                     }
                     return
                 }
@@ -58,7 +62,7 @@ class ItemDroppingSystem : IteratingSystem(
         // if reached here, means is not possible to drop the item at the current adjacent position
         entity.remove<WantsToDropItemComponent>()
         HeroComponent.ID[entity]?.let {
-            GameLog.entries.add("Is not possible to drop item here...")
+            GameLog.add("Is not possible to drop item here...")
         }
     }
 

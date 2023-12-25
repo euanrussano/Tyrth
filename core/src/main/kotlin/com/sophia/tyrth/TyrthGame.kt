@@ -23,7 +23,7 @@ class TyrthGame : Game() {
 
         Scene2DSkin.defaultSkin = Skin("ui/uiskin.json".toInternalFile())
         Assets.load()
-        GameLog.entries.clear()
+        GameLog.clear()
 
         setScreen(MainMenuScreen(this))
     }

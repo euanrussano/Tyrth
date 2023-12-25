@@ -43,7 +43,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(GUISystem(game.UIViewport, game.batch))
 
 
-        GameLog.entries.add("Welcome to Tyrth!")
+        GameLog.add("Welcome to Tyrth!")
     }
 
     override fun render(delta: Float) {

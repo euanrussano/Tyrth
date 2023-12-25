@@ -2,7 +2,9 @@ package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.Messages
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
 import ktx.ashley.remove
@@ -24,22 +26,21 @@ class ItemCollectingSystem : IteratingSystem(
 
             if (position.x != position2.x || position.y != position2.y) continue
 
-            if (backpack.currentWeight >= backpack.maxWeight){
+            if (backpack.items.size >= backpack.maxWeight){
                 HeroComponent.ID[entity]?.let {
                     val msg = "Your backpack is full! Cannot pick up item"
-                    if (GameLog.entries.lastOrNull()?.equals(msg) != true){
-                        GameLog.entries.add(msg)
-                    }
+                    GameLog.add(msg)
 
                 }
                 return
             }
 
             entity2.remove<PositionComponent>()
-            entity2.add(InBackpackComponent().apply { backpackID = backpack.ID })
-            backpack.currentWeight += 1
+            backpack.items.add(entity2)
+
             HeroComponent.ID[entity]?.let {
-                GameLog.entries.add("You pick up the $name2")
+                GameLog.add("You pick up the $name2")
+                MessageManager.getInstance().dispatchMessage(Messages.HERO_INVENTORY_CHANGED)
             }
             return
         }

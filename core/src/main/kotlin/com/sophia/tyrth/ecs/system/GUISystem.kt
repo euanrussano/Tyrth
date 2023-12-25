@@ -1,8 +1,13 @@
 package com.sophia.tyrth.ecs.system
 
+import com.badlogic.ashley.core.Engine
+import com.badlogic.ashley.core.Entity
+import com.badlogic.ashley.core.EntityListener
 import com.badlogic.ashley.core.EntitySystem
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.ai.msg.MessageManager
+import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -11,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.Window
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.GameLog
+import com.sophia.tyrth.Messages
 import com.sophia.tyrth.SaveGameService
 import com.sophia.tyrth.ecs.component.*
 import ktx.actors.centerPosition
@@ -23,7 +29,7 @@ import kotlin.math.min
 
 class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
 
-    private var accumulator: Float = 0f
+//    private var accumulator: Float = 0f
 
     private var inventoryWindow: Window
     private val inventoryTable: Table
@@ -45,7 +51,7 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
             this.defaults().pad(5f)
             table {
                 it.grow()
-                this.top()
+                this.top().pad(2f)
                 this.defaults().pad(2f)
                 inventoryTable = this
             }
@@ -63,7 +69,7 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
             this.defaults().pad(5f)
             table {
                 it.grow()
-                this.top()
+                this.top().pad(2f)
                 this.defaults().pad(2f)
                 equipmentTable = this
             }
@@ -140,73 +146,109 @@ class GUISystem(val viewport: Viewport, val batch: Batch) : EntitySystem() {
         im.addProcessor(0, stage)
     }
 
+    override fun addedToEngine(engine: Engine?) {
+        super.addedToEngine(engine)
+        engine ?: return
+
+        MessageManager.getInstance().addListener({msg : Telegram ->
+            updateHealth(engine)
+        }, Messages.HERO_HEALTH_CHANGED)
+
+        MessageManager.getInstance().addListener({msg : Telegram ->
+            updateMessages()
+        }, Messages.LOG_CHANGED)
+
+        MessageManager.getInstance().addListener({msg : Telegram ->
+            updateInventory(engine)
+        }, Messages.HERO_INVENTORY_CHANGED)
+
+        MessageManager.getInstance().addListener({msg : Telegram ->
+            updateEquipment(engine)
+        }, Messages.HERO_EQUIPMENT_CHANGED)
+
+        initializeStage(engine)
+    }
+
+    private fun initializeStage(engine: Engine) {
+        updateHealth(engine)
+        updateMessages()
+        updateEquipment(engine)
+        updateInventory(engine)
+    }
+
     override fun update(deltaTime : Float) {
         super.update(deltaTime)
-
-        // update the stage "only" 5 times per second (instead of theoretical 60x)
-        accumulator += deltaTime
-        if (accumulator >= 0.2f){
-            updateStage()
-            accumulator = 0f
-        }
 
         viewport.apply()
         stage.act(deltaTime)
         stage.draw()
 
-
     }
 
-    private fun updateStage() {
+    private fun updateEquipment(engine: Engine): Boolean {
         val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
-        val health = HealthComponent.ID[hero]
-        val backpack = BackpackComponent.ID[hero]
-
-        hpLabel.txt = hpStringFormat.format(health.hp, health.maxHP)
-        hpBar.value = health.hp.toFloat()/health.maxHP.toFloat()
-
-        messagesTable.clear()
-        for (entry in GameLog.entries.takeLast(min(GameLog.entries.size, 3))){
-            messagesTable.add(entry)
-            messagesTable.row()
-        }
-
-        inventoryTable.clear()
-        for(item in engine.getEntitiesFor(allOf(InBackpackComponent::class).get())){
-            val backpackID = InBackpackComponent.ID[item].backpackID
-            if (backpackID != backpack.ID) continue
-
-            val name = NameComponent.ID[item].name
-            inventoryTable.add(name)
-            inventoryTable.add(scene2d.textButton("Use"){
-                onClick {
-                    hero += WantsToUseItemComponent().apply{ this.item = item}
-                }
-            })
-            inventoryTable.add(scene2d.textButton("Drop"){
-                onClick {
-                    hero += WantsToDropItemComponent().apply{ this.item = item}
-                }
-            })
-            inventoryTable.row()
-        }
-        inventoryWindow.pack()
+        val equipmentHold = EquipmentHolderComponent.ID[hero]
 
         equipmentTable.clear()
-        for (item in engine.getEntitiesFor(allOf(EquippedComponent::class).get())){
-            if (EquippedComponent.ID[item].owner != hero) continue
+        for ((slot, item) in equipmentHold.slots) {
+            item ?: continue
             val name = NameComponent.ID[item].name
 
             equipmentTable.add(name)
-            equipmentTable.add(scene2d.textButton("Unequip"){
+            equipmentTable.add(scene2d.textButton("Unequip") {
                 onClick {
-                    hero += WantsToUnequipItemComponent().apply{this.item = item}
+                    hero += WantsToUnequipItemComponent().apply { this.item = item }
                 }
             })
             equipmentTable.row()
         }
         equipmentWindow.pack()
+        return true
+    }
 
+    private fun updateInventory(engine: Engine): Boolean {
+        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
+        val backpack = BackpackComponent.ID[hero]
+
+        inventoryTable.clear()
+        for (item in backpack.items) {
+    //            val backpackID = InBackpackComponent.ID[item].backpackID
+    //            if (backpackID != backpack.ID) continue
+
+            val name = NameComponent.ID[item].name
+            inventoryTable.add(name)
+            inventoryTable.add(scene2d.textButton("Use") {
+                onClick {
+                    hero += WantsToUseItemComponent().apply { this.item = item }
+                }
+            })
+            inventoryTable.add(scene2d.textButton("Drop") {
+                onClick {
+                    hero += WantsToDropItemComponent().apply { this.item = item }
+                }
+            })
+            inventoryTable.row()
+        }
+        inventoryWindow.pack()
+        return true
+    }
+
+    private fun updateMessages(): Boolean {
+        messagesTable.clear()
+        for (entry in GameLog.entries.takeLast(min(GameLog.entries.size, 3))) {
+            messagesTable.add(entry)
+            messagesTable.row()
+        }
+        return true
+    }
+
+    private fun updateHealth(engine: Engine): Boolean {
+        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
+        val health = HealthComponent.ID[hero]
+
+        hpLabel.txt = hpStringFormat.format(health.hp, health.maxHP)
+        hpBar.value = health.hp.toFloat() / health.maxHP.toFloat()
+        return true
     }
 
 }

@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.sophia.tyrth.Assets
+import com.sophia.tyrth.EquipmentSlot
 import com.sophia.tyrth.ecs.component.*
 import ktx.actors.txt
 import ktx.ashley.allOf
@@ -90,7 +91,17 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
             }
         }
         HeroComponent.ID[entity]?.let {
-            batch.draw(Assets.hero, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
+            var textureRegion = Assets.hero
+
+            val equipmentHolder = EquipmentHolderComponent.ID[entity]
+            equipmentHolder.slots[EquipmentSlot.MELEE]?.let {
+                textureRegion = Assets.heroWithMelee
+                equipmentHolder.slots[EquipmentSlot.SHIELD]?.let {
+                    textureRegion = Assets.heroWithShield
+                }
+            }
+
+            batch.draw(textureRegion, position.x.toFloat(), position.y.toFloat(), 1f, 1f)
         }
         MonsterComponent.ID[entity]?.let {
             val name = NameComponent.ID[entity].name.lowercase()

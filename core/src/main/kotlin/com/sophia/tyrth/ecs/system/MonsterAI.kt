@@ -25,7 +25,7 @@ class MonsterAI : IntervalIteratingSystem(
         val (x, y) = with(PositionComponent.ID[entity]){ x to y}
 
         if (heroX to heroY in fieldOfView.visibleTiles){
-            GameLog.entries.add("$name shouts insults")
+            GameLog.add("$name shouts insults")
             val dx = heroX - x
             val dy = heroY - y
             if (dx.absoluteValue > dy.absoluteValue){

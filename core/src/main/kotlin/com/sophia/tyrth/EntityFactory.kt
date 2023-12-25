@@ -96,6 +96,7 @@ object EntityFactory {
             with<BackpackComponent>{
                 maxWeight = 3
             }
+            with<EquipmentHolderComponent>{}
         }
     }
 

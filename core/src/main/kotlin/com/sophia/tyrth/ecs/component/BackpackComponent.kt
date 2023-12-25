@@ -7,14 +7,12 @@ import ktx.ashley.mapperFor
 
 class BackpackComponent : Component{
 
-    var ID = nextInt()
     var maxWeight: Int = 1
-    var currentWeight = 0
+
+    val items = mutableListOf<Entity>()
 
     companion object{
         val ID = mapperFor<BackpackComponent>()
-        var value = 0
-        fun nextInt() : Int = value++
     }
 
 }

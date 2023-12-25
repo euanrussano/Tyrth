@@ -7,11 +7,15 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 
 object Assets {
+    lateinit var hero : TextureRegion
+    lateinit var heroWithMelee: TextureRegion
+    lateinit var heroWithShield: TextureRegion
+
 
     lateinit var downstairs: TextureRegion
     lateinit var floor : TextureRegion
     lateinit var wall : TextureRegion
-    lateinit var hero : TextureRegion
+
 
     lateinit var target : TextureRegion
     lateinit var target2 : TextureRegion
@@ -44,8 +48,11 @@ object Assets {
         target2 = tilesheet[14][19]
 
         wall = tilesheet[13][0]
-        hero = tilesheet[0][25]
         downstairs = tilesheet[10][10]
+
+        hero = tilesheet[0][25]
+        heroWithMelee = tilesheet[0][26]
+        heroWithShield = tilesheet[0][27]
 
     }
 

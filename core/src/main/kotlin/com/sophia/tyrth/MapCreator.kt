@@ -46,8 +46,8 @@ object MapCreator {
         for (i in 0 .. MAX_ROOMS){
             val w = MathUtils.random(MIN_SIZE, MAX_SIZE)
             val h = MathUtils.random(MIN_SIZE, MAX_SIZE)
-            val x = MathUtils.random(1, width - w - 1)-1
-            val y = MathUtils.random(1, height - h - 1)-1
+            val x = MathUtils.random(1, width - w - 1)
+            val y = MathUtils.random(1, height - h - 1)
             val newRoom = Rectangle(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat())
             val ok = rooms.firstOrNull { rectangle -> rectangle.overlaps(newRoom) } == null
             if (ok){

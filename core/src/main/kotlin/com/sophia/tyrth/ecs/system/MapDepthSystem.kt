@@ -2,8 +2,10 @@ package com.sophia.tyrth.ecs.system
 
 import com.badlogic.ashley.core.Entity
 import com.badlogic.ashley.systems.IteratingSystem
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.sophia.tyrth.GameLog
 import com.sophia.tyrth.MapCreator
+import com.sophia.tyrth.Messages
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.allOf
 import ktx.ashley.oneOf
@@ -24,6 +26,7 @@ class MapDepthSystem : IteratingSystem(
         val (heroX, heroY) = with(PositionComponent.ID[hero]){ x to y}
 
         val (x, y) = with(PositionComponent.ID[entity]){x to y}
+//        println("$x. $y")
 
         if (heroX != x || heroY != y) return
 
@@ -43,9 +46,10 @@ class MapDepthSystem : IteratingSystem(
         position.y = rooms.first().y.toInt()
 
         // notify hero and give some health
-        GameLog.entries.add("You descend to the next level, and take a moment to heal.")
+        GameLog.add("You descend to the next level, and take a moment to heal.")
         val health = HealthComponent.ID[hero]
         health.hp = max(health.hp, health.maxHP/2)
+        MessageManager.getInstance().dispatchMessage(Messages.HERO_HEALTH_CHANGED)
     }
 
     private fun removeEntitiesOnDepthChange() {
@@ -54,14 +58,16 @@ class MapDepthSystem : IteratingSystem(
 
         val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).first()
         val heroBackpack = BackpackComponent.ID[hero]
+        val heroEquipmentHold = EquipmentHolderComponent.ID[hero]
 
-        // remove all items that are in a backpack not from hero
-        for (item in engine.getEntitiesFor(allOf(InBackpackComponent::class).get())){
-            val inBackpack = InBackpackComponent.ID[item]
-            if (inBackpack.backpackID != heroBackpack.ID){
-                engine.removeEntity(item)
-            }
+        // remove all items that are in a backpack not from hero, or not being equipped by hero
+        for (item in engine.getEntitiesFor(allOf(ItemComponent::class).get())){
+            if (item in heroBackpack.items) continue
+            if (item in heroEquipmentHold.slots.values) continue
+            engine.removeEntity(item)
         }
+
+
 
     }
 
