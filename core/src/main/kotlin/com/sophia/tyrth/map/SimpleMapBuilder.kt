@@ -44,7 +44,7 @@ class SimpleMapBuilder(override var depth: Int) : MapBuilder {
 
 
         for (room in rooms.drop(1)){
-            spawnRoom(engine, room, depth)
+            EntityFactory.spawnRoom(engine, room, depth)
         }
     }
 
@@ -110,67 +110,5 @@ class SimpleMapBuilder(override var depth: Int) : MapBuilder {
         heroPosition = heroPositionVec.x.toInt() to heroPositionVec.y.toInt()
     }
 
-    fun spawnRoom(engine : Engine, room: Rectangle, depth:Int) {
-        val spawnTable = mutableMapOf(
-            "Rat" to 10,
-            "Scorpion" to 1 + depth,
-            "Health Potion" to 7,
-            "Dagger" to 3,
-            "Shield" to 3,
-            "Longsword" to depth-1,
-            "Tower Shield" to depth-1,
-            "Rations" to 10,
-            "Map Scroll" to 1,
-            "Bear Trap" to 2
-        )
-        val spawnPoints = mutableMapOf<Pair<Int, Int>, String>()
 
-        val MAX_MONSTERS = 4 + (depth-1)
-
-        val numberSpawns = MathUtils.random(-2, MAX_MONSTERS)
-
-        for (i in 0 until numberSpawns){
-            var added = false
-            var tries = 0
-            while (!added && tries < 20){
-                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt())
-                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt())
-                if (x to y in spawnPoints){ tries += 1; continue}
-                spawnPoints[x to y] = rollSpawnTable(spawnTable)
-                added = true
-            }
-        }
-
-
-        for ((position, name) in spawnPoints){
-            val (x, y) = position
-            when(name){
-                "Rat" -> EntityFactory.rat(engine, x, y)
-                "Scorpion" -> EntityFactory.scorpion(engine, x, y)
-                "Health Potion" -> EntityFactory.healthPotion(engine, x, y)
-                "Dagger" -> EntityFactory.dagger(engine, x, y)
-                "Shield" -> EntityFactory.shield(engine, x, y)
-                "Longsword" -> EntityFactory.longsword(engine, x, y)
-                "Tower Shield" -> EntityFactory.towerShield(engine, x, y)
-                "Rations" -> EntityFactory.rations(engine, x, y)
-                "Map Scroll" -> EntityFactory.mapScroll(engine, x, y)
-                "Bear Trap" -> EntityFactory.bearTrap(engine, x, y)
-            }
-        }
-    }
-
-    private fun rollSpawnTable(spawnTable: MutableMap<String, Int>): String {
-        val totalWeight = spawnTable.values.sum()
-        if (totalWeight ==0 ) return "None"
-
-        var roll = MathUtils.random(1, totalWeight)
-        var index = 0
-        for ((key, value) in spawnTable){
-            if (roll < value){
-                return key
-            }
-            roll -= value
-        }
-        return "None"
-    }
 }

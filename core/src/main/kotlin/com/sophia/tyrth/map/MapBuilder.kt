@@ -2,7 +2,7 @@ package com.sophia.tyrth.map
 
 import com.badlogic.ashley.core.Engine
 
-interface MapBuilder {
+interface MapBuilder{
 
     var depth : Int
     var map : Array<Array<TileType>>
