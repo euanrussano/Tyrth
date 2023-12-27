@@ -71,7 +71,7 @@ class VisibilitySystem : IteratingSystem(
 
             // 1/24 chance of spotting the hidden item
             val roll = MathUtils.random(1, 24)
-            println(roll)
+            
             if (roll == 1){
                 val name = NameComponent.ID[hiddenEntity].name
                 hiddenEntity.remove<HiddenComponent>()

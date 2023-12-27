@@ -6,8 +6,22 @@ import com.badlogic.gdx.math.Rectangle
 import com.sophia.tyrth.ecs.component.*
 import ktx.ashley.entity
 import ktx.ashley.with
+import kotlin.math.min
 
 object EntityFactory {
+
+    fun spawnTable(depth: Int) = mutableMapOf(
+        "Rat" to 10,
+        "Scorpion" to 1 + depth,
+        "Health Potion" to 7,
+        "Dagger" to 3,
+        "Shield" to 3,
+        "Longsword" to depth-1,
+        "Tower Shield" to depth-1,
+        "Rations" to 10,
+        "Map Scroll" to 1,
+        "Bear Trap" to 2
+    )
 
     fun tile(engine: Engine, x: Int, y: Int, isWall: Boolean, isDownStairs : Boolean) {
         engine.entity {
@@ -252,53 +266,58 @@ object EntityFactory {
         }
     }
 
+    fun spawnEntity(engine: Engine, name : String, x : Int, y : Int){
+        when(name){
+            "Rat" -> rat(engine, x, y)
+            "Scorpion" -> scorpion(engine, x, y)
+            "Health Potion" -> healthPotion(engine, x, y)
+            "Dagger" -> dagger(engine, x, y)
+            "Shield" -> shield(engine, x, y)
+            "Longsword" -> longsword(engine, x, y)
+            "Tower Shield" -> towerShield(engine, x, y)
+            "Rations" -> rations(engine, x, y)
+            "Map Scroll" -> mapScroll(engine, x, y)
+            "Bear Trap" -> bearTrap(engine, x, y)
+        }
+    }
+
 
     fun spawnRoom(engine : Engine, room: Rectangle, depth:Int) {
-        val spawnTable = mutableMapOf(
-            "Rat" to 10,
-            "Scorpion" to 1 + depth,
-            "Health Potion" to 7,
-            "Dagger" to 3,
-            "Shield" to 3,
-            "Longsword" to depth-1,
-            "Tower Shield" to depth-1,
-            "Rations" to 10,
-            "Map Scroll" to 1,
-            "Bear Trap" to 2
-        )
+        val possibleTargets = mutableListOf<Pair<Int, Int>>()
+
+        for (x in (room.x).toInt() until (room.x + room.width).toInt()){
+            for (y in (room.y).toInt() until (room.y + room.height).toInt()){
+                possibleTargets.add(x to y)
+
+            }
+        }
+
+        spawnRegion(engine, possibleTargets, depth)
+
+    }
+
+    fun spawnRegion(engine: Engine, possibleTargets: MutableList<Pair<Int, Int>>, depth: Int) {
+        val roomTable = spawnTable(depth)
+
         val spawnPoints = mutableMapOf<Pair<Int, Int>, String>()
+        val areas = possibleTargets.toMutableList()
 
         val MAX_MONSTERS = 4 + (depth-1)
 
-        val numberSpawns = MathUtils.random(-2, MAX_MONSTERS)
+        val numberSpawns = min(areas.size, MathUtils.random(-2, MAX_MONSTERS))
+        if (numberSpawns == 0) return
 
         for (i in 0 until numberSpawns){
-            var added = false
-            var tries = 0
-            while (!added && tries < 20){
-                val x = room.x.toInt() + MathUtils.random(0, room.width.toInt()-1)
-                val y = room.y.toInt() + MathUtils.random(0, room.height.toInt()-1)
-                if (x to y in spawnPoints){ tries += 1; continue}
-                spawnPoints[x to y] = rollSpawnTable(spawnTable)
-                added = true
-            }
+            val idx = MathUtils.random(0, areas.size-1)
+            val area = areas[idx]
+            spawnPoints[area] = rollSpawnTable(roomTable)
+            areas.remove(area)
         }
 
 
         for ((position, name) in spawnPoints){
             val (x, y) = position
-            when(name){
-                "Rat" -> rat(engine, x, y)
-                "Scorpion" -> scorpion(engine, x, y)
-                "Health Potion" -> healthPotion(engine, x, y)
-                "Dagger" -> dagger(engine, x, y)
-                "Shield" -> shield(engine, x, y)
-                "Longsword" -> longsword(engine, x, y)
-                "Tower Shield" -> towerShield(engine, x, y)
-                "Rations" -> rations(engine, x, y)
-                "Map Scroll" -> mapScroll(engine, x, y)
-                "Bear Trap" -> bearTrap(engine, x, y)
-            }
+            spawnEntity(engine, name, x, y)
         }
     }
 
