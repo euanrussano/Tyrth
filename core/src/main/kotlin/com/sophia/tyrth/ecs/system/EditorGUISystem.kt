@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -29,9 +30,10 @@ import kotlin.math.roundToInt
 class EditorGUISystem(val game: TyrthGame, val UIViewport: Viewport, val worldViewport : Viewport, val batch: Batch) : EntitySystem(), InputProcessor {
 
     val stage = Stage(UIViewport, batch)
-    val touchPosition = Vector2()
-    val dragPosition = Vector2()
-    
+    val current = Vector2()
+    val delta = Vector2()
+    val last = Vector2(-1f, -1f)
+
     init {
 
         stage.actors{
@@ -113,13 +115,14 @@ class EditorGUISystem(val game: TyrthGame, val UIViewport: Viewport, val worldVi
     }
 
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        touchPosition.set(screenX.toFloat(), screenY.toFloat())
-        worldViewport.unproject(touchPosition)
+        current.set(screenX.toFloat(), screenY.toFloat())
+        worldViewport.unproject(current)
         return true
     }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-        return false
+        last.set(-1f, -1f)
+        return true
     }
 
     override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
@@ -127,12 +130,14 @@ class EditorGUISystem(val game: TyrthGame, val UIViewport: Viewport, val worldVi
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
-        dragPosition.set(screenX.toFloat(), screenY.toFloat())
-        worldViewport.unproject(dragPosition)
-        val delta = touchPosition.sub(dragPosition)
-        engine.entities[0] += WantsToMoveCamera().apply { dx = delta.x.roundToInt();  dy = delta.y.roundToInt() }
-        println(delta)
-        touchPosition.set(dragPosition)
+        current.set(screenX.toFloat(), screenY.toFloat())
+        worldViewport.unproject(current)
+        if (last.x != -1f && last.y != 1f){
+            worldViewport.unproject(delta.set(last.x, last.y))
+            delta.sub(current)
+            engine.entities[0] += WantsToMoveCamera().apply { dx = MathUtils.round(delta.x);  dy = MathUtils.round(delta.y) }
+        }
+        last.set(screenX.toFloat(), screenY.toFloat())
         return true
     }
 
