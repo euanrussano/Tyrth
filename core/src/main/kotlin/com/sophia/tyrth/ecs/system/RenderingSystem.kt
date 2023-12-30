@@ -44,18 +44,18 @@ class RenderingSystem(val viewport: ExtendViewport, val batch: Batch) : Iteratin
 
     var debug: Boolean = false
     private val revealedColor: Color = Color(Color.DARK_GRAY).apply { a = 0.5f }
-    private lateinit var visibleTiles: MutableSet<Pair<Int, Int>>
-    private lateinit var revealedTiles: MutableSet<Pair<Int, Int>>
+    private var visibleTiles: MutableSet<Pair<Int, Int>> = mutableSetOf()
+    private var revealedTiles: MutableSet<Pair<Int, Int>> = mutableSetOf()
 
     override fun update(deltaTime: Float) {
-        val hero = engine.getEntitiesFor(allOf(HeroComponent::class).get()).firstOrNull() ?: return
-        val position = PositionComponent.ID[hero]
-        val fieldOfView = FieldOfViewComponent.ID[hero]
+        engine.getEntitiesFor(allOf(HeroComponent::class).get()).firstOrNull()?.let { hero ->
+            FieldOfViewComponent.ID[hero]?.let {
+                visibleTiles = it.visibleTiles
+                revealedTiles = it.revealedTiles
+            }
+        }
 
-        visibleTiles = fieldOfView.visibleTiles
-        revealedTiles = fieldOfView.revealedTiles
 
-        viewport.camera.position.set(position.x.toFloat(), position.y.toFloat(), 0f)
 
 
         viewport.apply()

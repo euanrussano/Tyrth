@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.kotcrab.vis.ui.VisUI
 import com.sophia.tyrth.screen.MainMenuScreen
 import com.sophia.tyrth.screen.WorldScreen
 import ktx.assets.toInternalFile
@@ -21,7 +22,8 @@ class TyrthGame : Game() {
     override fun create() {
         batch = SpriteBatch()
 
-        Scene2DSkin.defaultSkin = Skin("ui/uiskin.json".toInternalFile())
+        VisUI.load()
+        Scene2DSkin.defaultSkin = VisUI.getSkin()//Skin("ui/uiskin.json".toInternalFile())
         Assets.load()
         GameLog.clear()
 

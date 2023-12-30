@@ -27,6 +27,8 @@ class MainMenuScreen(val game: TyrthGame) : Screen {
                 this.defaults().pad(10f)
                 textButton("New Game"){
                     onClick {
+                        game.engine.removeAllEntities()
+                        game.engine.removeAllSystems()
                         val builder = MapUtils.randomBuilder(1)
                         builder.build()
                         builder.spawnEntities(game.engine
@@ -42,6 +44,13 @@ class MainMenuScreen(val game: TyrthGame) : Screen {
                     onClick {
                         LoadGameService.loadGame(game.engine)
                         game.screen = WorldScreen(game)
+
+                    }
+                }
+                row()
+                textButton("Editor"){
+                    onClick {
+                        game.screen = EditorScreen(game)
 
                     }
                 }

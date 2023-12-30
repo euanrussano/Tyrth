@@ -136,7 +136,7 @@ class GUISystem(val game : TyrthGame, val viewport: Viewport, val batch: Batch) 
 
                     table {
                         it.grow().pad(2f)
-                        background = skin.getDrawable("black")
+                        background = skin.newDrawable("white", Color.BLACK)
                         this.top().left()
                         table {
                             it.growX()

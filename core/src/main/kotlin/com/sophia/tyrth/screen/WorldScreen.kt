@@ -18,7 +18,6 @@ import ktx.ashley.add
 
 class WorldScreen(val game: TyrthGame) : Screen {
 
-    private val guiViewport = game.UIViewport
     private val worldViewport = ExtendViewport(20f, 20f)
     private val engine = game.engine
 
@@ -43,6 +42,7 @@ class WorldScreen(val game: TyrthGame) : Screen {
         engine.addSystem(HungerSystem())
         engine.addSystem(DeathSystem())
         engine.addSystem(GameOverSystem())
+        engine.addSystem(CameraFollowHeroSystem(worldViewport))
         engine.addSystem(CameraControlSystem(worldViewport))
         engine.addSystem(RenderingSystem(worldViewport, game.batch))
         engine.addSystem(GUISystem(game, game.UIViewport, game.batch))
