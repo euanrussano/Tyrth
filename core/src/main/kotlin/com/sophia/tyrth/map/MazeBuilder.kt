@@ -92,13 +92,13 @@ class MazeBuilder(override var depth: Int) : MapBuilder {
     }
 
     class Grid(val width : Int, val height : Int){
-        val cells = Array(width){ row -> Array(height){ col -> Cell(row, col)} }
+        val cells = Array(width){ col -> Array(height){ row -> Cell(row, col)} }
         val backtrace = mutableListOf<Pair<Int, Int>>()
         var current = 0 to 0
 
         fun getAvailableNeighbors() : List<Pair<Int, Int>> {
             val neighbors = mutableListOf<Pair<Int, Int>>()
-            val (currentRow, currentColumn) = cells[current.first][current.second]
+            val (currentColumn, currentRow) = cells[current.first][current.second]
 
 
             val neighborIndices = listOf(
@@ -108,10 +108,10 @@ class MazeBuilder(override var depth: Int) : MapBuilder {
                 currentRow to currentColumn - 1
             )
 
-            for ((row, col) in neighborIndices){
-                val cell = cells.getOrNull(row)?.getOrNull(col)?: continue
+            for ((col, row) in neighborIndices){
+                val cell = cells.getOrNull(col)?.getOrNull(row)?: continue
                 if (!cell.visited){
-                    neighbors.add(cell.row to cell.col)
+                    neighbors.add(cell.col to cell.row)
                 }
             }
 
@@ -161,8 +161,8 @@ class MazeBuilder(override var depth: Int) : MapBuilder {
             //clear the map
             map.flatten().map { TileType.WALL }
             for (cell in cells.flatten()){
-                val x = (cell.row + 1)*2
-                val y = (cell.col + 1)*2
+                val x = (cell.col + 1)*2
+                val y = (cell.row + 1)*2
 
                 map[x][y] = TileType.FLOOR
                 if (!cell.walls[TOP]) map[x][y+1] = TileType.FLOOR

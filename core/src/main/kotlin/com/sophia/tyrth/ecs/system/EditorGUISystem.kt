@@ -11,6 +11,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.Viewport
+import com.kotcrab.vis.ui.widget.VisTextField
 import com.sophia.tyrth.TyrthGame
 import com.sophia.tyrth.ecs.component.WantsToMoveCamera
 import com.sophia.tyrth.ecs.component.WantsToZoomIn
@@ -18,24 +19,23 @@ import com.sophia.tyrth.ecs.component.WantsToZoomOut
 import com.sophia.tyrth.map.MapUtils
 import ktx.actors.onClick
 import ktx.ashley.plusAssign
+import ktx.scene2d.Scene2dDsl
 import ktx.scene2d.actors
 import ktx.scene2d.table
 import ktx.scene2d.textButton
-import ktx.scene2d.vis.menu
-import ktx.scene2d.vis.menuBar
-import ktx.scene2d.vis.menuItem
-import ktx.scene2d.vis.visTable
+import ktx.scene2d.vis.*
 import kotlin.math.roundToInt
+import com.badlogic.gdx.utils.Array as GdxArray
 
 class EditorGUISystem(val game: TyrthGame, val UIViewport: Viewport, val worldViewport : Viewport, val batch: Batch) : EntitySystem(), InputProcessor {
 
+    private lateinit var depthText: VisTextField
     val stage = Stage(UIViewport, batch)
     val current = Vector2()
     val delta = Vector2()
     val last = Vector2(-1f, -1f)
 
     init {
-
         stage.actors{
             table {
                 setFillParent(true)
@@ -49,12 +49,18 @@ class EditorGUISystem(val game: TyrthGame, val UIViewport: Viewport, val worldVi
                                 menuItem(name){
                                     onClick {
                                         engine.removeAllEntities()
+                                        builder.depth = depthText.text.toInt()
                                         builder.build()
                                         builder.spawnEntities(engine)
                                     }
                                 }
                             }
                         }
+                    }
+                    visLabel("Depth:")
+                    visTextField {
+                        depthText = this
+                        text = "1"
                     }
                 }
                 row()
