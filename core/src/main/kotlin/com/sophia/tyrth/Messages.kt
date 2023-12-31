@@ -3,6 +3,9 @@ package com.sophia.tyrth
 object Messages {
 
 
+    val DEPTH_CHANGED: Int = nextInt()
+    val INVENTORY_CHANGED: Int = nextInt()
+    val HEALTH_CHANGED: Int = nextInt()
     var value = 0
     fun nextInt() = value++
 

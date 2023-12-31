@@ -11,7 +11,7 @@ class SimpleTilemapFactory(
     val terrainRepository : TerrainRepository,
 ) : TilemapFactory {
 
-    override fun build(): Pair<Tilemap, List<Pair<Int, Int>>> {
+    override fun build(): TilemapFactory.TilemapFactoryResult {
         val wallTerrain = terrainRepository.findByName("Wall")
         val floorTerrain = terrainRepository.findByName("Floor")
 
@@ -44,16 +44,24 @@ class SimpleTilemapFactory(
         } }
 
         val spawnPoints = mutableListOf<Pair<Int, Int>>()
-        spawnPoints.add(heroPosition)
         for ( i in 1 .. 10){
             val x = MathUtils.random(1, width - 1)
             val y = MathUtils.random(1, height - 1)
-            if (!isWall[x][y]){
+            if (!isWall[x][y] && x to y != heroPosition){
                 spawnPoints.add(x to y)
             }
         }
 
-        return Tilemap(tiles) to spawnPoints
+        val itemSpawnPoints = mutableListOf<Pair<Int, Int>>()
+        for ( i in 1 .. 10){
+            val x = MathUtils.random(1, width - 1)
+            val y = MathUtils.random(1, height - 1)
+            if (!isWall[x][y] && x to y != heroPosition && x to y !in spawnPoints){
+                itemSpawnPoints.add(x to y)
+            }
+        }
+
+        return TilemapFactory.TilemapFactoryResult(Tilemap(tiles),heroPosition, spawnPoints, itemSpawnPoints)
 
     }
 }

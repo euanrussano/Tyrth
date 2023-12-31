@@ -3,9 +3,9 @@ package com.sophia.tyrth.model.manager
 import com.sophia.tyrth.model.Entity
 import com.sophia.tyrth.model.World
 
-class MovementManager(val world: World) {
+class MovementManager(val world: World) : WorldManager {
 
-    fun update(delta: Float) {
+    override fun update(delta: Float) {
         for (entity in world.entities){
             update(entity)
         }
@@ -15,8 +15,6 @@ class MovementManager(val world: World) {
         val (x, y) = entity.position
         val (dx, dy) = entity.velocity
         entity.position = x + dx to y + dy
-
-        entity.velocity = 0 to 0
     }
 
 }

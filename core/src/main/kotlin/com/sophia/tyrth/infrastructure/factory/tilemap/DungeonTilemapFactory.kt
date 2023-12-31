@@ -21,15 +21,17 @@ class DungeonTilemapFactory(
     val terrainRepository: TerrainRepository
 ) : TilemapFactory {
 
-    override fun build(): Pair<Tilemap, List<Pair<Int, Int>>> {
+    override fun build(): TilemapFactory.TilemapFactoryResult {
         val wallTerrain = terrainRepository.findByName("Wall")
         val floorTerrain = terrainRepository.findByName("Floor")
+        val downstairsTerrain = terrainRepository.findByName("Downstairs")
 
         val rooms = mutableListOf<Rectangle>()
 
         val width = 80
         val height = 50
         val isWall = Array(width){Array(height){ true } }
+        val isDownStairs = Array(width){Array(height){ false } }
 
         val MAX_ROOMS = 30
         val MIN_SIZE = 6
@@ -78,28 +80,46 @@ class DungeonTilemapFactory(
             }
         }
 
+        val center = Vector2()
+        rooms.first().getCenter(center)
+        val heroPosition = center.x.toInt() to center.y.toInt()
+
+        val stairsPosition = Vector2()
+        rooms.first().getCenter(stairsPosition)
+        isDownStairs[stairsPosition.x.toInt() + 1][stairsPosition.y.toInt()] = true
+
+
         val tiles = Array(width){ x -> Array(height){y ->
-            val terrain = if (isWall[x][y]) wallTerrain else floorTerrain
+            val terrain = if (isDownStairs[x][y]){
+                downstairsTerrain
+            } else if (isWall[x][y]){
+                wallTerrain
+            }else{
+                floorTerrain
+            }
             Tile(x, y, terrain)
         } }
 
-//        val stairsPosition = Vector2()
-//        rooms.last().getCenter(stairsPosition)
-//        map[stairsPosition.x.toInt()][stairsPosition.y.toInt()] = TileType.DOWNSTAIRS
 
-        val center = Vector2()
-        rooms.first().getCenter(center)
 
-        val heroPosition = center.x.toInt() to center.y.toInt()
 
-        val spawnPoints = mutableListOf(heroPosition)
+        val spawnPoints = mutableListOf<Pair<Int, Int>>()
         for (room in rooms.drop(1)){
             room.getCenter(center)
             spawnPoints.add(center.x.toInt() to center.y.toInt())
         }
 
+        val itemSpawnPoints = mutableListOf<Pair<Int, Int>>()
+        for (room in rooms.drop(1)){
+            val x = (room.x + 1 + MathUtils.random(0, room.width.toInt()-1)).toInt()
+            val y = (room.y + 1 + MathUtils.random(0, room.height.toInt()-1)).toInt()
+            if (x to y !in spawnPoints){
+                itemSpawnPoints.add(x to y)
+            }
+        }
 
-        return Tilemap(tiles) to spawnPoints
+
+        return TilemapFactory.TilemapFactoryResult(Tilemap(tiles), heroPosition, spawnPoints, itemSpawnPoints)
     }
 
     fun applyRoomToMap(room : Rectangle, isWall : Array<Array<Boolean>>){

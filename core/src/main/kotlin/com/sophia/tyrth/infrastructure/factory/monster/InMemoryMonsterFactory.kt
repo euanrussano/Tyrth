@@ -10,7 +10,8 @@ class InMemoryMonsterFactory(val monsterRepository: MonsterRepository) {
     init {
         monsterRepository.entities.addAll(
             listOf(
-                Monster("Rat", MonsterTexturePreFab(Assets.tiles["rat"]!!))
+                Monster("Rat", 3, MonsterTexturePreFab(Assets.tilesheet[8][31]), 16,4,1),
+                Monster("Scorpion", 3, MonsterTexturePreFab(Assets.tilesheet[5][24]),16,4,1)
             )
         )
     }

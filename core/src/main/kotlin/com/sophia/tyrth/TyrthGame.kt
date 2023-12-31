@@ -10,11 +10,13 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.kotcrab.vis.ui.VisUI
 import com.sophia.tyrth.infrastructure.factory.monster.InMemoryMonsterFactory
 import com.sophia.tyrth.infrastructure.factory.hero.HeroFactory
+import com.sophia.tyrth.infrastructure.factory.item.InMemoryItemFactory
 import com.sophia.tyrth.infrastructure.factory.terrain.InMemoryTerrainFactory
 import com.sophia.tyrth.infrastructure.factory.tilemap.DungeonTilemapFactory
 import com.sophia.tyrth.infrastructure.factory.tilemap.SimpleTilemapFactory
 import com.sophia.tyrth.infrastructure.factory.tilemap.TilemapFactory
 import com.sophia.tyrth.infrastructure.factory.world.WorldFactory
+import com.sophia.tyrth.infrastructure.repository.item.ItemRepository
 import com.sophia.tyrth.infrastructure.repository.monster.MonsterRepository
 import com.sophia.tyrth.infrastructure.repository.terrain.TerrainRepository
 import com.sophia.tyrth.model.World
@@ -27,11 +29,7 @@ class TyrthGame : Game() {
     val terrainRepository = TerrainRepository()
     val heroFactory = HeroFactory()
     val monsterRepository = MonsterRepository()
-
-    val tilemapFactories : List<TilemapFactory> = listOf(
-        SimpleTilemapFactory(terrainRepository),
-        DungeonTilemapFactory(terrainRepository)
-    )
+    val itemRepository = ItemRepository()
 
     lateinit var world : World
 
@@ -55,15 +53,16 @@ class TyrthGame : Game() {
     private fun loadRepositories() {
         InMemoryTerrainFactory(terrainRepository)
         InMemoryMonsterFactory(monsterRepository)
+        InMemoryItemFactory(itemRepository)
 
     }
 
     fun randomWorld() {
-        MathUtils.random.setSeed(999)
+        MathUtils.random.setSeed(995)
 
-        val tilemapFactory = tilemapFactories.random(MathUtils.random.asKotlinRandom())
+        val tilemapFactory = TilemapUtils.random()
         //val tilemapFactory = tilemapFactories.first()
-        val worldFactory = WorldFactory(tilemapFactory, heroFactory, monsterRepository)
+        val worldFactory = WorldFactory(tilemapFactory, heroFactory, monsterRepository, itemRepository)
 
         world = worldFactory.build()
 

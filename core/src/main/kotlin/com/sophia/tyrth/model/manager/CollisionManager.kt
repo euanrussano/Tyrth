@@ -3,9 +3,9 @@ package com.sophia.tyrth.model.manager
 import com.sophia.tyrth.model.Entity
 import com.sophia.tyrth.model.World
 
-class CollisionManager(val world: World) {
+class CollisionManager(val world: World) : WorldManager {
 
-    fun update(delta: Float) {
+    override fun update(delta: Float) {
         for (entity in world.entities) {
             update(entity)
         }

@@ -3,9 +3,11 @@ package com.sophia.tyrth
 import com.badlogic.ashley.core.Engine
 import com.badlogic.ashley.core.Entity
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.XmlReader
 import com.badlogic.gdx.utils.XmlWriter
 import com.sophia.tyrth.ecs.component.*
+import com.sophia.tyrth.model.World
 import ktx.ashley.allOf
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -140,9 +142,12 @@ object SaveGameService {
 
     }
 
-
-
-
+    fun saveWorld(world: World) {
+        val json = Json()
+//        println(json.prettyPrint(world.hero))
+        println(json.prettyPrint(world.monsterInstances[0]))
+//        println(json.prettyPrint(world.itemInstances[0]))
+    }
 
 
 }

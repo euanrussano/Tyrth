@@ -20,7 +20,7 @@ object Assets {
     lateinit var target : TextureRegion
     lateinit var target2 : TextureRegion
 
-    private lateinit var tilesheet: Array<Array<TextureRegion>>
+    lateinit var tilesheet: Array<Array<TextureRegion>>
     val tiles = mutableMapOf<String, TextureRegion>()
 
     fun load(){
