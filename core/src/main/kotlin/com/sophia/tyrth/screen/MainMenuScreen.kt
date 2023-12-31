@@ -1,7 +1,6 @@
 package com.sophia.tyrth.screen
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Stage
@@ -37,6 +36,13 @@ class MainMenuScreen(val game: TyrthGame) : Screen {
                         EntityFactory.hero(game.engine, x, y)
 
                         game.screen = WorldScreen(game)
+                    }
+                }
+                row()
+                textButton("New Game OOP"){
+                    onClick {
+                        game.randomWorld()
+                        game.screen = WorldScreen2(game)
                     }
                 }
                 row()
