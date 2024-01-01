@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 import com.sophia.tyrth.ecs.component.*
 import com.sophia.tyrth.model.World
 import com.sophia.tyrth.model.hero.Hero
+import com.sophia.tyrth.model.item.ItemInstance
 import com.sophia.tyrth.screen.MainMenuScreen
 import ktx.actors.centerPosition
 import ktx.actors.onClick
@@ -191,7 +192,16 @@ class WorldGUI(private val game : TyrthGame) {
         }, Messages.INVENTORY_CHANGED)
 
         MessageManager.getInstance().addListener({ msg : Telegram ->
+            if (msg.sender == world.hero){
+                updateEquipment()
+                updateInventory()
+            }
+            true
+        }, Messages.EQUIPMENT_CHANGED)
+
+        MessageManager.getInstance().addListener({ msg : Telegram ->
             updateEquipment()
+            updateInventory()
         }, Messages.HERO_EQUIPMENT_CHANGED)
 
         MessageManager.getInstance().addListener({ msg : Telegram ->
@@ -232,22 +242,22 @@ class WorldGUI(private val game : TyrthGame) {
 
     private fun updateEquipment(): Boolean {
         val hero = world.hero
-//        val equipmentHold = EquipmentHolderComponent.ID[hero]
-//
-//        equipmentTable.clear()
-//        for ((slot, item) in equipmentHold.slots) {
-//            item ?: continue
-//            val name = NameComponent.ID[item].name
-//
-//            equipmentTable.add(name)
-//            equipmentTable.add(scene2d.textButton("Unequip") {
-//                onClick {
-//                    hero += WantsToUnequipItemComponent().apply { this.item = item }
-//                }
-//            })
-//            equipmentTable.row()
-//        }
-//        equipmentWindow.pack()
+        val equipmentSlot = hero.itemSlotMap
+
+        equipmentTable.clear()
+        for ((slot, item) in equipmentSlot) {
+            item ?: continue
+            val name = item.item.name
+
+            equipmentTable.add(name)
+            equipmentTable.add(scene2d.textButton("Unequip") {
+                onClick {
+                    hero.unequip(item, slot)
+                }
+            })
+            equipmentTable.row()
+        }
+        equipmentWindow.pack()
         return true
     }
 

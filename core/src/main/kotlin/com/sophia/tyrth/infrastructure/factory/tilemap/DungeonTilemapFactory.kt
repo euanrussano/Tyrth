@@ -15,13 +15,14 @@ import com.sophia.tyrth.model.tilemap.Tile
 import com.sophia.tyrth.model.tilemap.Tilemap
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.random.asKotlinRandom
 
 
 class DungeonTilemapFactory(
     val terrainRepository: TerrainRepository
 ) : TilemapFactory {
 
-    override fun build(): TilemapFactory.TilemapFactoryResult {
+    override fun build(depth: Int): TilemapFactory.TilemapFactoryResult {
         val wallTerrain = terrainRepository.findByName("Wall")
         val floorTerrain = terrainRepository.findByName("Floor")
         val downstairsTerrain = terrainRepository.findByName("Downstairs")
@@ -101,18 +102,23 @@ class DungeonTilemapFactory(
         } }
 
 
-
-
+        val numberMonsters = MathUtils.random(3, 7) + depth
         val spawnPoints = mutableListOf<Pair<Int, Int>>()
-        for (room in rooms.drop(1)){
-            room.getCenter(center)
-            spawnPoints.add(center.x.toInt() to center.y.toInt())
+        for (i in 0 until numberMonsters){
+            val room = rooms.drop(1).random(MathUtils.random.asKotlinRandom())
+            val x = (room.x + 1 + MathUtils.random(0, room.width.toInt()-2)).toInt()
+            val y = (room.y + 1 + MathUtils.random(0, room.height.toInt()-2)).toInt()
+            if (x to y !in spawnPoints){
+                spawnPoints.add(x to y)
+            }
         }
 
+        val numberItems = max(1, MathUtils.random(7, 11) - depth)
         val itemSpawnPoints = mutableListOf<Pair<Int, Int>>()
-        for (room in rooms.drop(1)){
-            val x = (room.x + 1 + MathUtils.random(0, room.width.toInt()-1)).toInt()
-            val y = (room.y + 1 + MathUtils.random(0, room.height.toInt()-1)).toInt()
+        for (i in 0 until numberItems){
+            val room = rooms.drop(1).random(MathUtils.random.asKotlinRandom())
+            val x = (room.x + 1 + MathUtils.random(0, room.width.toInt()-2)).toInt()
+            val y = (room.y + 1 + MathUtils.random(0, room.height.toInt()-2)).toInt()
             if (x to y !in spawnPoints){
                 itemSpawnPoints.add(x to y)
             }

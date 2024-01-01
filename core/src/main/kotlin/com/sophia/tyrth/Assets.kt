@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 
 
 object Assets {
+    lateinit var damageEffect: TextureRegion
     lateinit var hero : TextureRegion
     lateinit var heroWithMelee: TextureRegion
     lateinit var heroWithShield: TextureRegion
@@ -63,6 +64,8 @@ object Assets {
         hero = tilesheet[0][25]
         heroWithMelee = tilesheet[0][26]
         heroWithShield = tilesheet[0][27]
+
+        damageEffect = tilesheet[11][26]
 
     }
 

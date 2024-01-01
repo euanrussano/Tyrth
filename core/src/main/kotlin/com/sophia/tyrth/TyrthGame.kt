@@ -8,11 +8,13 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 import com.kotcrab.vis.ui.VisUI
+import com.sophia.tyrth.infrastructure.factory.LevelFactory
 import com.sophia.tyrth.infrastructure.factory.monster.InMemoryMonsterFactory
 import com.sophia.tyrth.infrastructure.factory.hero.HeroFactory
 import com.sophia.tyrth.infrastructure.factory.item.InMemoryItemFactory
 import com.sophia.tyrth.infrastructure.factory.terrain.InMemoryTerrainFactory
 import com.sophia.tyrth.infrastructure.factory.tilemap.DungeonTilemapFactory
+import com.sophia.tyrth.infrastructure.factory.tilemap.RandomTilemapFactory
 import com.sophia.tyrth.infrastructure.factory.tilemap.SimpleTilemapFactory
 import com.sophia.tyrth.infrastructure.factory.tilemap.TilemapFactory
 import com.sophia.tyrth.infrastructure.factory.world.WorldFactory
@@ -47,6 +49,8 @@ class TyrthGame : Game() {
 
         loadRepositories()
 
+        LevelFactory.initialize(RandomTilemapFactory(terrainRepository), monsterRepository, itemRepository )
+
         setScreen(MainMenuScreen(this))
     }
 
@@ -60,9 +64,7 @@ class TyrthGame : Game() {
     fun randomWorld() {
         MathUtils.random.setSeed(995)
 
-        val tilemapFactory = TilemapUtils.random()
-        //val tilemapFactory = tilemapFactories.first()
-        val worldFactory = WorldFactory(tilemapFactory, heroFactory, monsterRepository, itemRepository)
+        val worldFactory = WorldFactory(heroFactory)
 
         world = worldFactory.build()
 

@@ -74,7 +74,7 @@ class WorldScreen2(val game: TyrthGame) : Screen {
     }
 
     override fun hide() {
-        TODO("Not yet implemented")
+        Gdx.input.inputProcessor = null
     }
 
     override fun dispose() {

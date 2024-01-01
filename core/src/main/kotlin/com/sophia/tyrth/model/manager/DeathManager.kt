@@ -12,7 +12,7 @@ class DeathManager(val world: World) : WorldManager {
         for (entity in world.entities){
             if (entity.hp <= 0) {
                 if (entity is MonsterInstance){
-                    world.monsterInstances.remove(entity)
+                    world.monsterInstancesByDepth[world.currentDepth].remove(entity)
                     GameLog.add("${entity.monster.name} is dead...")
                 }
             }

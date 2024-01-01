@@ -5,7 +5,7 @@ import com.sophia.tyrth.model.tilemap.Tilemap
 interface TilemapFactory {
 
     // returns the tilemap and a list of possible spawn points (for entities, items, etc placement)
-    fun build() : TilemapFactoryResult
+    fun build(depth : Int) : TilemapFactoryResult
 
     data class TilemapFactoryResult(
         val tilemap: Tilemap,

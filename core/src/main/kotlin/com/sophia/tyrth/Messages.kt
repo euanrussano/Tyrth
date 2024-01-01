@@ -3,6 +3,7 @@ package com.sophia.tyrth
 object Messages {
 
 
+    val EQUIPMENT_CHANGED: Int = nextInt()
     val DEPTH_CHANGED: Int = nextInt()
     val INVENTORY_CHANGED: Int = nextInt()
     val HEALTH_CHANGED: Int = nextInt()

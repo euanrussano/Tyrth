@@ -7,4 +7,11 @@ class FieldOfView(
     val visibleTiles = mutableSetOf<Pair<Int, Int>>()
     val visibileEntities = mutableSetOf<Entity>()
 
+    fun clear() {
+        revealedTiles.clear()
+        visibleTiles.clear()
+        visibileEntities.clear()
+
+    }
+
 }

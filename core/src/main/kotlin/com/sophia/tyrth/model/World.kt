@@ -12,11 +12,18 @@ import com.sophia.tyrth.model.monster.MonsterInstance
 class World(
     val tilemaps: MutableList<Tilemap>,
     val hero : Hero,
-    val monsterInstances : MutableList<MonsterInstance>,
-    val itemInstances : MutableList<ItemInstance>,
+    val monsterInstancesByDepth : MutableList<MutableList<MonsterInstance>>,
+    val itemInstancesByDepth : MutableList<MutableList<ItemInstance>>,
+    val particles : MutableList<Particle> = mutableListOf(),
     var currentDepth : Int = 0,
 ) {
 
+    var isGameOver: Boolean = false
+
+    val monsterInstances : List<MonsterInstance>
+        get() = monsterInstancesByDepth[currentDepth]
+    val itemInstances : List<ItemInstance>
+        get() = itemInstancesByDepth[currentDepth]
     val tilemap: Tilemap
         get() = tilemaps[currentDepth]
     val entities: List<Entity>
@@ -29,12 +36,18 @@ class World(
         VisibilityManager(this),
         DeathManager(this),
         ItemPickupManager(this),
-        DepthManager(this)
+        ParticleVanishingManager(this),
+        DepthManager(this),
+        GameOverManager(this)
     )
 
+
     fun update(delta: Float, heroAction: HeroAction) {
+        if (isGameOver) return
+
         hero.update(delta, heroAction)
         monsterInstances.forEach { it.update(delta) }
+        particles.forEach { it.update(delta) }
 
         managers.forEach { it.update(delta) }
 

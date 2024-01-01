@@ -10,9 +10,9 @@ class InMemoryTerrainFactory(val terrainRepository: TerrainRepository) {
     init {
         terrainRepository.entities.addAll(
             listOf(
-                Terrain("Wall", TerrainTexturePreFab(Assets.wall), true),
-                Terrain("Floor", TerrainTexturePreFab(Assets.floor), false),
-                Terrain("Downstairs", TerrainTexturePreFab(Assets.downstairs), false)
+                Terrain("Wall", TerrainTexturePreFab(Assets.wall), true, false),
+                Terrain("Floor", TerrainTexturePreFab(Assets.floor), false, false),
+                Terrain("Downstairs", TerrainTexturePreFab(Assets.downstairs), false, true)
             )
         )
     }

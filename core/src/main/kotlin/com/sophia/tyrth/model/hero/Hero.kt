@@ -1,10 +1,14 @@
 package com.sophia.tyrth.model.hero
 
+import com.badlogic.gdx.ai.msg.MessageManager
 import com.badlogic.gdx.ai.msg.Telegram
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.sophia.tyrth.HeroAction
+import com.sophia.tyrth.Messages
 import com.sophia.tyrth.model.Backpack
 import com.sophia.tyrth.model.Entity
+import com.sophia.tyrth.model.item.EquipItemSlot
+import com.sophia.tyrth.model.item.ItemInstance
 
 class Hero(
     val name : String,
@@ -12,6 +16,7 @@ class Hero(
     val heroPreFab: HeroPreFab,
     backpack : Backpack
 ) : Entity(position, 4, 30, 5, 2, backpack){
+
 
     fun update(delta : Float, heroAction: HeroAction){
         when(heroAction){
@@ -32,5 +37,7 @@ class Hero(
     override fun handleMessage(msg: Telegram?): Boolean {
         return false
     }
+
+
 
 }

@@ -27,14 +27,26 @@ class WorldRenderer(val batch: SpriteBatch, val viewport: Viewport, val world: W
     }
 
     fun render(){
+        if (world.isGameOver) return
+
         centerCameraOnHero()
         viewport.apply()
         batch.projectionMatrix = viewport.camera.combined
         batch.use {
             renderMap()
             renderObjects()
+            renderParticles()
         }
 
+    }
+
+    private fun renderParticles() {
+        for(particle in world.particles){
+            val (x, y) = particle.position
+            if (particle.position in world.hero.fieldOfView.visibleTiles){
+                batch.draw(particle.textureRegion, x.toFloat(), y.toFloat(), 1f, 1f)
+            }
+        }
     }
 
     private fun centerCameraOnHero() {
@@ -50,11 +62,13 @@ class WorldRenderer(val batch: SpriteBatch, val viewport: Viewport, val world: W
 
         batch.setColor(Color.DARK_GRAY)
         for ((x, y) in world.hero.fieldOfView.revealedTiles){
+            if (x !in world.tilemap.tiles.indices || y !in world.tilemap.tiles[0].indices) continue
             world.tilemap.tiles[x][y].draw(batch)
         }
 
         batch.setColor(Color.WHITE)
         for ((x, y) in world.hero.fieldOfView.visibleTiles){
+            if (x !in world.tilemap.tiles.indices || y !in world.tilemap.tiles[0].indices) continue
             world.tilemap.tiles[x][y].draw(batch)
         }
 
